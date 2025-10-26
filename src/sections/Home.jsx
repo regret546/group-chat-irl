@@ -1,14 +1,14 @@
+import { div } from "motion/react-client";
 import Button from "../components/UI/Button";
 
 const Home = () => {
   return (
-    <div>
-      <div className="flex flex-col-reverse md:flex-row bg-primary p-[2rem] pb-0 relative">
+    <div className="bg-primary grid place-items-center ">
+      <div className="flex-row md:flex justify-center p-[2rem] pb-0 relative w-[80%]">
         {/* LEFT CONTENT */}
-        <div className="w-full md:w-1/2 flex items-center pb-[2rem]">
+        <div className="w-full md:w-1/2 flex  pb-[2rem]">
           <div className="w-full md:w-[85%]">
-            <h2 className="text-[2rem]">Welcome to</h2>
-            <h1 className="text-[3.5rem] text-white">Group Chat IRL Podcast</h1>
+            <img src="/src/assets/irl-card.png" alt="card" />
             <p className="text-[1.25rem]">
               Weekly Bardagulan with Vivax and Friends. Lorem Ipsum is simply
               dummy text of the printing and typesetting industry. Lorem Ipsum

@@ -22,4 +22,12 @@
     font-family: "Fredoka", sans-serif;
     letter-spacing: 0.1em;
   }
+  .latest {
+    i {
+      @apply text-[2rem] cursor-pointer text-primary hover:scale-120 hover:text-primary/80 transition-all;
+    }
+    p {
+      @apply text-[2rem] text-white;
+    }
+  }
 }
