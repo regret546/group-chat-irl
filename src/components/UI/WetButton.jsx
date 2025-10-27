@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 
-export default function WetPaintButton({ text = "Wet Paint Button", onClick }) {
-  const [isHovered, setIsHovered] = useState(false);
-
+export default function WetPaintButton({
+  text = "Wet Paint Button",
+  className,
+  onClick,
+}) {
   const drips = [
     { left: "10%", height: 24, delay: 0 },
     { left: "30%", height: 20, delay: 0.4 },
@@ -11,20 +12,12 @@ export default function WetPaintButton({ text = "Wet Paint Button", onClick }) {
     { left: "85%", height: 18, delay: 1.2 },
   ];
 
-
-  const baseColor = "var(--color-primary)";
-  const hoverColor = "var(--color-secondary)";
+  const baseColor = "var(--color-accent)";
 
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="group relative rounded px-4 py-2.5 font-semibold text-[var(--color-dark)] cursor-pointer overflow-visible transition-all"
-      style={{
-        backgroundColor: isHovered ? hoverColor : baseColor,
-        transition: "background-color 0.3s ease",
-      }}
+      className={`group relative rounded px-4 py-2.5 font-semibold text-[var(--color-dark)] bg-accent overflow-visible transition-all ${className}`}
     >
       {text}
 
@@ -43,12 +36,8 @@ export default function WetPaintButton({ text = "Wet Paint Button", onClick }) {
         >
           {/* Stem */}
           <div
-            className="w-2 rounded-b-full transition-colors"
-            style={{
-              height: drip.height,
-              backgroundColor: isHovered ? hoverColor : baseColor,
-              transition: "background-color 0.3s ease",
-            }}
+            className="w-2 rounded-b-full bg-accent"
+            style={{ height: drip.height }}
           ></div>
 
           {/* Left curve */}
@@ -64,10 +53,7 @@ export default function WetPaintButton({ text = "Wet Paint Button", onClick }) {
               fillRule="evenodd"
               clipRule="evenodd"
               d="M5.4 0H0V5.4C0 2.41765 2.41766 0 5.4 0Z"
-              style={{
-                fill: isHovered ? hoverColor : baseColor,
-                transition: "fill 0.3s ease",
-              }}
+              fill="var(--color-accent)"
             />
           </svg>
 
@@ -84,20 +70,13 @@ export default function WetPaintButton({ text = "Wet Paint Button", onClick }) {
               fillRule="evenodd"
               clipRule="evenodd"
               d="M5.4 0H0V5.4C0 2.41765 2.41766 0 5.4 0Z"
-              style={{
-                fill: isHovered ? hoverColor : baseColor,
-                transition: "fill 0.3s ease",
-              }}
+              fill="var(--color-accent)"
             />
           </svg>
 
           {/* Falling droplet */}
           <motion.div
-            className="absolute top-full h-2 w-2 rounded-full transition-colors"
-            style={{
-              backgroundColor: isHovered ? hoverColor : baseColor,
-              transition: "background-color 0.3s ease",
-            }}
+            className="absolute top-full h-2 w-2 rounded-full bg-accent"
             initial={{ y: 0, opacity: 0 }}
             animate={{
               y: [0, 45],
