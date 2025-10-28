@@ -27,7 +27,7 @@ const Latest = () => {
   };
 
   return (
-    <div className="latest w-full grid justify-items-center h-[500px] bg-dark">
+    <section className="latest w-full grid justify-items-center h-[500px] bg-dark">
       <div className="p-4 w-[80%] grid justify-items-center gap-[3rem]">
         <WetPaintButton
           text={"Latest Episodes"}
@@ -96,7 +96,7 @@ const Latest = () => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

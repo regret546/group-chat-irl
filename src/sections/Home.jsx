@@ -3,7 +3,7 @@ import Button from "../components/UI/Button";
 
 const Home = () => {
   return (
-    <div className="bg-primary grid place-items-center ">
+    <section className="bg-primary grid place-items-center ">
       <div className="flex-row md:flex justify-center p-[2rem] pb-0 relative w-[80%]">
         {/* LEFT CONTENT */}
         <div className="w-full md:w-1/2 flex  pb-[2rem]">
@@ -35,7 +35,7 @@ const Home = () => {
           />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -2,6 +2,7 @@ import "./style.css";
 import Navbar from "./components/Navbar";
 import Home from "./sections/Home";
 import Latest from "./sections/Latest";
+import Previous from "./sections/Previous";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         <Navbar />
         <Home />
         <Latest />
+        <Previous />
       </div>
     </>
   );

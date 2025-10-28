@@ -8,7 +8,10 @@ export default function Waveform({ audioUrl, audioRef }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  // Format seconds → mm:ss
+  // If you want a final background color behind the waveform canvas,
+  // set FINAL_CANVAS_BG to that (e.g. 'transparent' or '#0b0b0b')
+  const FINAL_CANVAS_BG = "transparent";
+
   const formatTime = (seconds) => {
     if (!seconds || isNaN(seconds)) return "00:00";
     const minutes = Math.floor(seconds / 60);
@@ -20,7 +23,6 @@ export default function Waveform({ audioUrl, audioRef }) {
 
   useEffect(() => {
     let isDestroyed = false;
-
     if (!waveformRef.current) return;
 
     const primaryColor =
@@ -28,7 +30,6 @@ export default function Waveform({ audioUrl, audioRef }) {
         .getPropertyValue("--color-primary")
         .trim() || "#FCAB1C";
 
-    // Create Wavesurfer instance only once
     const wavesurfer = WaveSurfer.create({
       container: waveformRef.current,
       waveColor: primaryColor,
@@ -46,32 +47,50 @@ export default function Waveform({ audioUrl, audioRef }) {
 
     waveSurferRef.current = wavesurfer;
 
-    // Load audio
     setIsLoading(true);
+    // add a temporary loading background on the wrapper so skeleton is visible
+    waveformRef.current.style.background =
+      "var(--loading-bg, rgba(0,0,0,0.25))";
+
     wavesurfer.load(audioUrl);
 
-    // When ready
     wavesurfer.on("ready", () => {
       if (isDestroyed) return;
+
       setDuration(wavesurfer.getDuration());
-      setIsLoading(false);
-    });
 
-    // Prevent error on destroy during load
-    wavesurfer.on("error", (err) => {
-      if (err.name !== "AbortError") {
-        console.error("Wavesurfer error:", err);
+      // ensure the canvas exists, then set its background to the FINAL value
+      const canvas = waveformRef.current.querySelector("canvas");
+      if (canvas) {
+        // Set canvas CSS background to the final value (covers bar gaps)
+        canvas.style.background = FINAL_CANVAS_BG;
+        // Ensure canvas is fully opaque so the wrapper bg doesn't show
+        canvas.style.display = canvas.style.display || "block";
       }
+
+      // Small delay to let the browser paint the canvas before removing the skeleton.
+      // You can reduce this if it's long for you.
+      setTimeout(() => {
+        // remove the temporary wrapper background
+        if (waveformRef.current)
+          waveformRef.current.style.background = "transparent";
+        setIsLoading(false);
+      }, 180);
+    });
+
+    wavesurfer.on("error", (err) => {
+      if (err.name !== "AbortError") console.error("Wavesurfer error:", err);
+      if (waveformRef.current)
+        waveformRef.current.style.background = "transparent";
       setIsLoading(false);
     });
 
-    // Cleanup safely
     return () => {
       isDestroyed = true;
       try {
         wavesurfer.destroy();
       } catch {
-        /* ignore abort */
+        /* ignore */
       }
     };
   }, [audioUrl, audioRef]);
@@ -94,21 +113,26 @@ export default function Waveform({ audioUrl, audioRef }) {
 
   return (
     <div className="flex flex-col items-center gap-2 w-[400px]">
-      {/* Waveform Container */}
       <div className="relative w-full h-[64px] rounded-md overflow-hidden">
-        {/* Show skeleton while loading */}
-        {isLoading && (
-          <div className="absolute inset-0 bg-gray-700 animate-pulse rounded-md" />
-        )}
+        {/* Skeleton overlay while loading */}
+        <div
+          aria-hidden
+          className={`absolute inset-0 z-20 transition-opacity duration-300 pointer-events-none ${
+            isLoading ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          {/* customize skeleton look */}
+          <div className="w-full h-full rounded-md animate-pulse bg-[var(--color-primary)]/20" />
+        </div>
 
-        {/* Actual waveform */}
+        {/* Waveform container where WaveSurfer mounts */}
         <div
           ref={waveformRef}
-          className={`absolute inset-0 ${
-            isLoading
-              ? "opacity-0"
-              : "opacity-100 transition-opacity duration-300"
+          className={`absolute inset-0 transition-opacity duration-300 ${
+            isLoading ? "opacity-60" : "opacity-100"
           }`}
+          // ensure wrapper has no persistent background by default
+          style={{ background: "transparent" }}
         />
       </div>
 
