@@ -3,6 +3,8 @@ import Navbar from "./components/Navbar";
 import Home from "./sections/Home";
 import Latest from "./sections/Latest";
 import Previous from "./sections/Previous";
+import Reviews from "./sections/Reviews";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -12,6 +14,8 @@ function App() {
         <Home />
         <Latest />
         <Previous />
+        <Reviews />
+        <Footer />
       </div>
     </>
   );

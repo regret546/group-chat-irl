@@ -2,7 +2,7 @@ import React from "react";
 
 const Previous = () => {
   return (
-    <section className="previous bg-primary grid justify-items-center p-4">
+    <section className="previous bg-primary grid justify-items-center p-4 pb-[3rem]">
       <div className="grid justify-items-center w-[80%]">
         <h2 className="font-bold text-accent text-3xl">
           Start Listineing Today
