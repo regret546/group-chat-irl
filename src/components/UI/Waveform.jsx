@@ -112,8 +112,8 @@ export default function Waveform({ audioUrl, audioRef }) {
   }, [audioRef]);
 
   return (
-    <div className="flex flex-col items-center gap-2 w-[400px]">
-      <div className="relative w-full h-[64px] rounded-md overflow-hidden">
+    <div className="flex flex-col items-center gap-2 w-full max-w-full">
+      <div className="relative w-full h-[64px] rounded-md overflow-hidden max-w-full">
         {/* Skeleton overlay while loading */}
         <div
           aria-hidden
@@ -137,7 +137,7 @@ export default function Waveform({ audioUrl, audioRef }) {
       </div>
 
       {/* Time labels */}
-      <div className="flex justify-between w-full text-xs text-gray-300">
+      <div className="flex justify-between w-full text-xs text-white/70 max-w-full">
         <span>{formatTime(currentTime)}</span>
         <span>{formatTime(duration)}</span>
       </div>
