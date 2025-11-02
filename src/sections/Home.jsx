@@ -1,6 +1,8 @@
 import { div } from "motion/react-client";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/UI/Button";
+import irlCard from "../assets/irl-card.png";
+import groupPhoto from "../assets/group-photo.png";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -15,7 +17,7 @@ const Home = () => {
         {/* LEFT CONTENT */}
         <div className="w-full md:w-1/2 flex pb-[2rem]">
           <div className="w-full md:w-[85%]">
-            <img src="/assets/irl-card.png" alt="card" className="w-full" loading="eager" fetchPriority="high" />
+            <img src={irlCard} alt="card" className="w-full" loading="eager" fetchPriority="high" />
             <p className="text-[1rem] md:text-[1.25rem] mt-4">
               Weekly Bardagulan with Vivax and Friends. Lorem Ipsum is simply
               dummy text of the printing and typesetting industry. Lorem Ipsum
@@ -38,7 +40,7 @@ const Home = () => {
         <div className="w-full md:w-1/2 flex justify-center md:justify-end">
           <img
             className="w-full h-auto max-w-full md:max-w-[900px] object-contain"
-            src="/assets/group-photo.png"
+            src={groupPhoto}
             alt="Group photo"
             loading="eager"
           />

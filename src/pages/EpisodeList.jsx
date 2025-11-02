@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit, Trash2, Play } from 'lucide-react';
 import { useNotification } from '../contexts/NotificationContext';
 import Swal from 'sweetalert2';
+import thumbnailFallback from '../assets/thumbnail.jpg';
 
 const EpisodeList = () => {
   const navigate = useNavigate();
@@ -109,7 +110,7 @@ const EpisodeList = () => {
                 <div className="flex flex-col md:flex-row gap-6">
                   {/* Thumbnail */}
                   <img 
-                    src={episode.thumbnailUrl || '/assets/thumbnail.jpg'} 
+                    src={episode.thumbnailUrl || thumbnailFallback} 
                     alt={episode.title}
                     className="w-full md:w-48 h-48 object-cover rounded-lg"
                     loading="lazy"

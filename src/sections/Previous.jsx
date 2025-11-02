@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/UI/Button";
 import AudioPlayer from "../components/UI/AudioPlayer";
+import thumbnailFallback from "../assets/thumbnail.jpg";
+import episode8Fallback from "../assets/episode8.mp3";
 
 const Previous = () => {
   const navigate = useNavigate();
@@ -53,7 +55,7 @@ const Previous = () => {
                 <div key={episode._id} className="bg-dark p-[1.5rem] md:p-[2rem] grid gap-4 justify-items-center">
                   <img 
                     className="w-full" 
-                    src={episode.thumbnailUrl || "/assets/thumbnail.jpg"} 
+                    src={episode.thumbnailUrl || thumbnailFallback} 
                     alt={episode.title}
                     loading="lazy"
                   />
@@ -70,7 +72,7 @@ const Previous = () => {
                   <h3 className="text-[1.2rem] md:text-[1.5rem] font-bold text-white">
                     {episode.title}
                   </h3>
-                  <AudioPlayer audioUrl={episode.audioUrl || "/assets/episode8.mp3"} compact />
+                  <AudioPlayer audioUrl={episode.audioUrl || episode8Fallback} compact />
                   {episode.youtubeUrl && (
                     <a
                       href={episode.youtubeUrl}

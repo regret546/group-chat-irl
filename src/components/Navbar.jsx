@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import WetPaintButton from "./UI/WetButton";
 import Button from "./UI/Button";
 import { div } from "motion/react-client";
+import logoWhite from "../assets/logo-white.png";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -63,7 +64,7 @@ const Navbar = () => {
         <img
           onClick={() => navigate("/")}
           className="w-[60px] h-[60px] md:w-[80px] md:h-[80px] cursor-pointer"
-          src="/assets/logo-white.png"
+          src={logoWhite}
           alt="logo"
           loading="eager"
           fetchPriority="high"

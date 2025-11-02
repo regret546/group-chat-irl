@@ -1,6 +1,8 @@
 import { useRef, useState, useEffect } from "react";
 import WetPaintButton from "../components/UI/WetButton";
 import Waveform from "../components/UI/Waveform";
+import thumbnailFallback from "../assets/thumbnail.jpg";
+import episode8Fallback from "../assets/episode8.mp3";
 
 const Latest = () => {
   const audioRef = useRef(null);
@@ -78,7 +80,7 @@ const Latest = () => {
           {/* Thumbnail */}
           <img
             className="w-[min(280px,90vw)] h-[min(280px,90vw)] object-cover shadow-lg"
-            src={latestEpisode.thumbnailUrl || "/assets/thumbnail.jpg"}
+            src={latestEpisode.thumbnailUrl || thumbnailFallback}
             alt={latestEpisode.title}
             loading="eager"
           />
@@ -94,7 +96,7 @@ const Latest = () => {
               {/* Hidden audio element */}
               <audio
                 ref={audioRef}
-                src={latestEpisode.audioUrl || "/assets/episode8.mp3"}
+                src={latestEpisode.audioUrl || episode8Fallback}
                 preload="metadata"
               />
               
@@ -129,7 +131,7 @@ const Latest = () => {
               {/* Waveform visualization */}
               <div className="flex-1 min-w-0">
                 <Waveform
-                  audioUrl={latestEpisode.audioUrl || "/assets/episode8.mp3"}
+                  audioUrl={latestEpisode.audioUrl || episode8Fallback}
                   audioRef={audioRef}
                 />
               </div>
@@ -152,7 +154,7 @@ const Latest = () => {
         <div className="hidden md:flex flex-row gap-4 w-full">
           <img
             className="w-[500px] h-[300px] object-cover flex-shrink-0"
-            src={latestEpisode.thumbnailUrl || "/assets/thumbnail.jpg"}
+            src={latestEpisode.thumbnailUrl || thumbnailFallback}
             alt={latestEpisode.title}
             loading="eager"
           />
@@ -166,7 +168,7 @@ const Latest = () => {
               {/* Hidden audio element */}
               <audio
                 ref={audioRef}
-                src={latestEpisode.audioUrl || "/assets/episode8.mp3"}
+                src={latestEpisode.audioUrl || episode8Fallback}
                 preload="metadata"
               />
               
@@ -201,7 +203,7 @@ const Latest = () => {
               {/* Waveform visualization */}
               <div className="flex-1 min-w-0">
                 <Waveform
-                  audioUrl={latestEpisode.audioUrl || "/assets/episode8.mp3"}
+                  audioUrl={latestEpisode.audioUrl || episode8Fallback}
                   audioRef={audioRef}
                 />
               </div>

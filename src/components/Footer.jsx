@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import logoBlack from "../assets/logo-black.png";
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ const Footer = () => {
       <div className="flex flex-col md:flex-row justify-evenly items-center w-full md:w-[80%] gap-6 md:gap-0 py-6 md:py-8">
         <img
           className="w-[100px] md:w-[150px]"
-          src="/assets/logo-black.png"
+          src={logoBlack}
           alt="logo"
           loading="lazy"
         />

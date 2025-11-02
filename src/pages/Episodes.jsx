@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import AudioPlayer from "../components/UI/AudioPlayer";
+import thumbnailFallback from "../assets/thumbnail.jpg";
+import episode8Fallback from "../assets/episode8.mp3";
 
 const Episodes = () => {
   const [episodes, setEpisodes] = useState([]);
@@ -63,7 +65,7 @@ const Episodes = () => {
                   >
                     <img
                       className="w-full"
-                      src={episode.thumbnailUrl || "/assets/thumbnail.jpg"}
+                      src={episode.thumbnailUrl || thumbnailFallback}
                       alt={episode.title}
                       loading="lazy"
                     />
@@ -86,7 +88,7 @@ const Episodes = () => {
                       {episode.title}
                     </h3>
                     <AudioPlayer
-                      audioUrl={episode.audioUrl || "/assets/episode8.mp3"}
+                      audioUrl={episode.audioUrl || episode8Fallback}
                       compact
                     />
                     {episode.youtubeUrl && (
