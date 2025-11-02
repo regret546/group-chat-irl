@@ -26,9 +26,9 @@ exports.createEpisode = async (req, res) => {
     if (files.audio && files.audio[0]) {
       audioPath = `/uploads/audio/${files.audio[0].filename}`;
     }
-    const { title, description } = req.body;
-    if (!title || !audioPath)
-      return res.status(400).json({ message: "Title and audio are required" });
+    const { title, description, youtubeUrl } = req.body;
+    if (!title || !audioPath || !youtubeUrl)
+      return res.status(400).json({ message: "Title, audio, and YouTube URL are required" });
 
     // get duration
     let durationSeconds = null;
@@ -47,6 +47,20 @@ exports.createEpisode = async (req, res) => {
         );
         durationSeconds = Math.floor(meta.format.duration || 0);
         durationHuman = secondsToHms(durationSeconds);
+        
+        // Validate duration - reject if over 5 minutes
+        if (durationSeconds > 300) {
+          // Delete the uploaded file
+          const fs = require("fs");
+          try {
+            fs.unlinkSync(fileOnDisk);
+          } catch (unlinkErr) {
+            console.error("Error deleting file:", unlinkErr);
+          }
+          return res.status(400).json({ 
+            message: `Audio file is too long (${durationHuman}). Maximum duration is 5 minutes (5:00). Please upload a shorter clip.` 
+          });
+        }
       } catch (err) {
         // ignore metadata errors; admin can still proceed
         console.warn("metadata error", err.message);
@@ -56,6 +70,7 @@ exports.createEpisode = async (req, res) => {
     const ep = await Episode.create({
       title,
       description,
+      youtubeUrl,
       thumbnailUrl: thumbnailPath,
       audioUrl: audioPath,
       durationSeconds,

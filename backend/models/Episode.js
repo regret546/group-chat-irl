@@ -9,6 +9,7 @@ const EpisodeSchema = new mongoose.Schema(
     durationSeconds: { type: Number }, // stored in seconds
     durationHuman: { type: String }, // optional, e.g. "12:34"
     description: { type: String }, // optional description
+    youtubeUrl: { type: String }, // YouTube video URL
   },
   { timestamps: true }
 );
