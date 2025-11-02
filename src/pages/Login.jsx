@@ -1,53 +1,51 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Lock, User, Eye, EyeOff } from 'lucide-react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Lock, User, Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    username: '',
-    password: ''
+    email: "",
+    password: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
-    setError('');
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      // TODO: Replace with your actual authentication API
-      // const response = await fetch('YOUR_API_ENDPOINT/admin/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
-      // const data = await response.json();
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
 
-      // Demo authentication (replace with real authentication)
-      if (formData.username === 'admin' && formData.password === 'admin123') {
+      if (response.ok && data.token) {
         // Store auth token
-        localStorage.setItem('adminToken', 'demo-token-12345');
-        localStorage.setItem('isAdminAuthenticated', 'true');
-        
+        localStorage.setItem("adminToken", data.token);
+        localStorage.setItem("isAdminAuthenticated", "true");
+
         // Redirect to admin dashboard
-        navigate('/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c');
+        navigate("/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c");
       } else {
-        setError('Invalid username or password');
+        setError(data.message || "Invalid email or password");
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('An error occurred. Please try again.');
+      console.error("Login error:", err);
+      setError("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -79,31 +77,37 @@ const Login = () => {
               </div>
             )}
 
-            {/* Username Field */}
+            {/* Email Field */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
-                Username
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-300 mb-2"
+              >
+                Email
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <User size={20} className="text-gray-400" />
                 </div>
                 <input
-                  id="username"
-                  name="username"
-                  type="text"
+                  id="email"
+                  name="email"
+                  type="email"
                   required
-                  value={formData.username}
+                  value={formData.email}
                   onChange={handleInputChange}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="Enter your username"
+                  placeholder="Enter your email"
                 />
               </div>
             </div>
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-300 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
@@ -113,7 +117,7 @@ const Login = () => {
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   required
                   value={formData.password}
                   onChange={handleInputChange}
@@ -126,9 +130,15 @@ const Login = () => {
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
                   {showPassword ? (
-                    <EyeOff size={20} className="text-gray-400 hover:text-gray-300" />
+                    <EyeOff
+                      size={20}
+                      className="text-gray-400 hover:text-gray-300"
+                    />
                   ) : (
-                    <Eye size={20} className="text-gray-400 hover:text-gray-300" />
+                    <Eye
+                      size={20}
+                      className="text-gray-400 hover:text-gray-300"
+                    />
                   )}
                 </button>
               </div>
@@ -142,30 +152,39 @@ const Login = () => {
             >
               {isLoading ? (
                 <span className="flex items-center gap-2">
-                  <svg className="animate-spin h-5 w-5 text-dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin h-5 w-5 text-dark"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Logging in...
                 </span>
               ) : (
-                'Sign In'
+                "Sign In"
               )}
             </button>
-
-            {/* Demo Credentials */}
-            <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-              <p className="text-xs text-blue-400 font-medium mb-1">Demo Credentials:</p>
-              <p className="text-xs text-blue-300">Username: <span className="font-mono">admin</span></p>
-              <p className="text-xs text-blue-300">Password: <span className="font-mono">admin123</span></p>
-            </div>
           </div>
         </form>
 
         {/* Back to Site */}
         <div className="text-center">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
             className="text-sm text-gray-400 hover:text-primary transition-colors"
           >
             ← Back to main site
@@ -177,4 +196,3 @@ const Login = () => {
 };
 
 export default Login;
-

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Upload, Save } from 'lucide-react';
+import { useNotification } from '../contexts/NotificationContext';
 
 const ReviewForm = () => {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   const [formData, setFormData] = useState({
-    title: '',
-    review: '',
+    reviewerName: '',
+    reviewText: '',
   });
   const [reviewerPicture, setReviewerPicture] = useState(null);
   const [picturePreview, setPicturePreview] = useState(null);
@@ -33,30 +35,37 @@ const ReviewForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const reviewData = new FormData();
-    reviewData.append('title', formData.title);
-    reviewData.append('review', formData.review);
-    if (reviewerPicture) reviewData.append('picture', reviewerPicture);
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      showNotification('error', 'You must be logged in to create a review');
+      setTimeout(() => navigate('/admin-login'), 2000);
+      return;
+    }
 
-    // TODO: Replace with your actual API endpoint
+    const reviewData = new FormData();
+    reviewData.append('reviewerName', formData.reviewerName);
+    reviewData.append('reviewText', formData.reviewText);
+    if (reviewerPicture) reviewData.append('reviewerPic', reviewerPicture);
+
     try {
-      // const response = await fetch('YOUR_API_ENDPOINT/reviews', {
-      //   method: 'POST',
-      //   body: reviewData
-      // });
-      // const data = await response.json();
-      
-      console.log('Review data to submit:', {
-        title: formData.title,
-        review: formData.review,
-        picture: reviewerPicture?.name
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: reviewData
       });
+      const data = await response.json();
       
-      alert('Review added successfully! (Connect to your backend API)');
-      navigate('/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c');
+      if (response.ok) {
+        showNotification('success', 'Review added successfully!');
+        setTimeout(() => navigate('/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c'), 1500);
+      } else {
+        showNotification('error', data.message || 'Error adding review');
+      }
     } catch (error) {
       console.error('Error submitting review:', error);
-      alert('Error adding review. Check console for details.');
+      showNotification('error', 'Error adding review. Check console for details.');
     }
   };
 
@@ -108,14 +117,14 @@ const ReviewForm = () => {
 
           {/* Title (Reviewer Name) */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="reviewerName" className="block text-sm font-medium text-gray-700 mb-2">
               Reviewer Name / Title
             </label>
             <input
               type="text"
-              id="title"
-              name="title"
-              value={formData.title}
+              id="reviewerName"
+              name="reviewerName"
+              value={formData.reviewerName}
               onChange={handleInputChange}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
@@ -125,13 +134,13 @@ const ReviewForm = () => {
 
           {/* Review Text */}
           <div>
-            <label htmlFor="review" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="reviewText" className="block text-sm font-medium text-gray-700 mb-2">
               Review
             </label>
             <textarea
-              id="review"
-              name="review"
-              value={formData.review}
+              id="reviewText"
+              name="reviewText"
+              value={formData.reviewText}
               onChange={handleInputChange}
               required
               rows="6"

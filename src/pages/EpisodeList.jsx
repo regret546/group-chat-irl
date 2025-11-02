@@ -1,43 +1,78 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit, Trash2, Play } from 'lucide-react';
+import { useNotification } from '../contexts/NotificationContext';
+import Swal from 'sweetalert2';
 
 const EpisodeList = () => {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   const [episodes, setEpisodes] = useState([]);
 
   useEffect(() => {
-    // TODO: Fetch episodes from your backend API
-    // fetch('YOUR_API_ENDPOINT/episodes')
-    //   .then(res => res.json())
-    //   .then(data => setEpisodes(data))
-    //   .catch(err => console.error(err));
-
-    // Sample data for demonstration
-    setEpisodes([
-      {
-        id: 1,
-        title: 'Episode 8: Atty. Jelou Ann Feb Tabanao-Salon',
-        uploadDate: '2024-11-01',
-        totalTime: '37:58',
-        thumbnail: '/src/assets/thumbnail.jpg',
-        audioUrl: '/src/assets/episode8.mp3'
+    const fetchEpisodes = async () => {
+      try {
+        const response = await fetch('/api/episodes');
+        if (response.ok) {
+          const data = await response.json();
+          setEpisodes(data);
+        } else {
+          console.error('Error fetching episodes');
+        }
+      } catch (err) {
+        console.error('Error fetching episodes:', err);
       }
-    ]);
+    };
+    
+    fetchEpisodes();
   }, []);
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this episode?')) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (result.isConfirmed) {
       try {
-        // TODO: Delete request to your backend API
-        // await fetch(`YOUR_API_ENDPOINT/episodes/${id}`, { method: 'DELETE' });
+        const token = localStorage.getItem('adminToken');
+        const response = await fetch(`/api/episodes/${id}`, { 
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         
-        setEpisodes(episodes.filter(ep => ep.id !== id));
-        console.log('Deleted episode:', id);
-        alert('Episode deleted successfully!');
+        if (response.ok) {
+          setEpisodes(episodes.filter(ep => ep._id !== id));
+          showNotification('success', 'Episode deleted successfully!');
+          Swal.fire(
+            'Deleted!',
+            'Episode has been deleted.',
+            'success'
+          );
+        } else {
+          showNotification('error', 'Error deleting episode');
+          Swal.fire(
+            'Error!',
+            'Could not delete episode.',
+            'error'
+          );
+        }
       } catch (error) {
         console.error('Error deleting episode:', error);
-        alert('Error deleting episode');
+        showNotification('error', 'Error deleting episode');
+        Swal.fire(
+          'Error!',
+          'An error occurred while deleting the episode.',
+          'error'
+        );
       }
     }
   };
@@ -68,15 +103,16 @@ const EpisodeList = () => {
           <div className="grid grid-cols-1 gap-6">
             {episodes.map((episode) => (
               <div 
-                key={episode.id} 
+                key={episode._id} 
                 className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
               >
                 <div className="flex flex-col md:flex-row gap-6">
                   {/* Thumbnail */}
                   <img 
-                    src={episode.thumbnail} 
+                    src={episode.thumbnailUrl || '/assets/thumbnail.jpg'} 
                     alt={episode.title}
                     className="w-full md:w-48 h-48 object-cover rounded-lg"
+                    loading="lazy"
                   />
                   
                   {/* Details */}
@@ -84,25 +120,27 @@ const EpisodeList = () => {
                     <h3 className="text-xl font-bold text-gray-900 mb-2">{episode.title}</h3>
                     <div className="space-y-2 text-gray-600">
                       <p><span className="font-semibold">Upload Date:</span> {new Date(episode.uploadDate).toLocaleDateString()}</p>
-                      <p><span className="font-semibold">Duration:</span> {episode.totalTime}</p>
-                      <p className="flex items-center gap-2">
-                        <Play size={16} />
-                        <span className="text-sm">{episode.audioUrl}</span>
-                      </p>
+                      <p><span className="font-semibold">Duration:</span> {episode.durationHuman || 'N/A'}</p>
+                      {episode.audioUrl && (
+                        <p className="flex items-center gap-2">
+                          <Play size={16} />
+                          <span className="text-sm">{episode.audioUrl}</span>
+                        </p>
+                      )}
                     </div>
                   </div>
 
                   {/* Actions */}
                   <div className="flex md:flex-col gap-2">
                     <button
-                      onClick={() => navigate(`/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c/episodes/edit/${episode.id}`)}
+                      onClick={() => navigate(`/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c/episodes/edit/${episode._id}`)}
                       className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       <Edit size={16} />
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(episode.id)}
+                      onClick={() => handleDelete(episode._id)}
                       className="flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                     >
                       <Trash2 size={16} />

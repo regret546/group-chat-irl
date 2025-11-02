@@ -1,23 +1,27 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, Save } from 'lucide-react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Upload, Save, AlertCircle } from "lucide-react";
+import { useNotification } from "../contexts/NotificationContext";
 
 const EpisodeForm = () => {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   const [formData, setFormData] = useState({
-    title: '',
-    uploadDate: '',
-    totalTime: '',
+    title: "",
+    uploadDate: "",
+    totalTime: "",
+    youtubeUrl: "",
   });
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [audioFile, setAudioFile] = useState(null);
-  const [audioFileName, setAudioFileName] = useState('');
+  const [audioFileName, setAudioFileName] = useState("");
+  const [audioDuration, setAudioDuration] = useState(null);
 
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -33,45 +37,78 @@ const EpisodeForm = () => {
     }
   };
 
-  const handleAudioChange = (e) => {
+  const handleAudioChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       setAudioFile(file);
       setAudioFileName(file.name);
+
+      // Check audio duration
+      const audio = new Audio(URL.createObjectURL(file));
+      audio.addEventListener("loadedmetadata", () => {
+        const duration = audio.duration;
+        setAudioDuration(duration);
+
+        if (duration > 300) {
+          // 5 minutes in seconds
+          showNotification(
+            "warning",
+            `Warning: Audio is ${Math.floor(duration / 60)}:${Math.floor(
+              duration % 60
+            )
+              .toString()
+              .padStart(2, "0")} long. Maximum 5 minutes recommended.`,
+            5000
+          );
+        }
+      });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const episodeData = new FormData();
-    episodeData.append('title', formData.title);
-    episodeData.append('uploadDate', formData.uploadDate);
-    episodeData.append('totalTime', formData.totalTime);
-    if (thumbnail) episodeData.append('thumbnail', thumbnail);
-    if (audioFile) episodeData.append('audio', audioFile);
 
-    // TODO: Replace with your actual API endpoint
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      showNotification("error", "You must be logged in to create an episode");
+      setTimeout(() => navigate("/admin-login"), 2000);
+      return;
+    }
+
+    const episodeData = new FormData();
+    episodeData.append("title", formData.title);
+    if (formData.totalTime)
+      episodeData.append("description", `Duration: ${formData.totalTime}`);
+    if (formData.youtubeUrl)
+      episodeData.append("youtubeUrl", formData.youtubeUrl);
+    if (thumbnail) episodeData.append("thumbnail", thumbnail);
+    if (audioFile) episodeData.append("audio", audioFile);
+
     try {
-      // const response = await fetch('YOUR_API_ENDPOINT/episodes', {
-      //   method: 'POST',
-      //   body: episodeData
-      // });
-      // const data = await response.json();
-      
-      console.log('Episode data to submit:', {
-        title: formData.title,
-        uploadDate: formData.uploadDate,
-        totalTime: formData.totalTime,
-        thumbnail: thumbnail?.name,
-        audio: audioFile?.name
+      const response = await fetch("/api/episodes", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: episodeData,
       });
-      
-      alert('Episode added successfully! (Connect to your backend API)');
-      navigate('/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c');
+      const data = await response.json();
+
+      if (response.ok) {
+        showNotification("success", "Episode added successfully!");
+        setTimeout(
+          () => navigate("/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c"),
+          1500
+        );
+      } else {
+        showNotification("error", data.message || "Error adding episode");
+      }
     } catch (error) {
-      console.error('Error submitting episode:', error);
-      alert('Error adding episode. Check console for details.');
+      console.error("Error submitting episode:", error);
+      showNotification(
+        "error",
+        "Error adding episode. Check console for details."
+      );
     }
   };
 
@@ -81,7 +118,7 @@ const EpisodeForm = () => {
       <div className="bg-dark text-white shadow-lg">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <button
-            onClick={() => navigate('/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c')}
+            onClick={() => navigate("/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c")}
             className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors mb-4"
           >
             <ArrowLeft size={20} />
@@ -93,7 +130,10 @@ const EpisodeForm = () => {
 
       {/* Form */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-lg shadow-md p-6 space-y-6"
+        >
           {/* Thumbnail Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -101,9 +141,9 @@ const EpisodeForm = () => {
             </label>
             <div className="flex items-center gap-4">
               {thumbnailPreview && (
-                <img 
-                  src={thumbnailPreview} 
-                  alt="Thumbnail preview" 
+                <img
+                  src={thumbnailPreview}
+                  alt="Thumbnail preview"
                   className="w-32 h-32 object-cover rounded-lg border-2 border-gray-300"
                 />
               )}
@@ -123,7 +163,10 @@ const EpisodeForm = () => {
 
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Episode Title
             </label>
             <input
@@ -138,9 +181,32 @@ const EpisodeForm = () => {
             />
           </div>
 
+          {/* YouTube URL */}
+          <div>
+            <label
+              htmlFor="youtubeUrl"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              YouTube URL
+            </label>
+            <input
+              type="url"
+              id="youtubeUrl"
+              name="youtubeUrl"
+              value={formData.youtubeUrl}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+          </div>
+
           {/* Date of Upload */}
           <div>
-            <label htmlFor="uploadDate" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="uploadDate"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Date of Upload
             </label>
             <input
@@ -156,7 +222,10 @@ const EpisodeForm = () => {
 
           {/* Total Time */}
           <div>
-            <label htmlFor="totalTime" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="totalTime"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Total Time (Duration)
             </label>
             <input
@@ -169,7 +238,9 @@ const EpisodeForm = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
               placeholder="e.g., 37:58 or 1:15:30"
             />
-            <p className="mt-2 text-sm text-gray-500">Format: MM:SS or HH:MM:SS</p>
+            <p className="mt-2 text-sm text-gray-500">
+              Format: MM:SS or HH:MM:SS
+            </p>
           </div>
 
           {/* Audio Clip Upload */}
@@ -179,9 +250,19 @@ const EpisodeForm = () => {
             </label>
             <div className="flex items-center gap-4">
               {audioFileName && (
-                <span className="text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded-lg">
-                  {audioFileName}
-                </span>
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded-lg">
+                    {audioFileName}
+                  </span>
+                  {audioDuration && (
+                    <span className="text-xs text-gray-500">
+                      Duration: {Math.floor(audioDuration / 60)}:
+                      {Math.floor(audioDuration % 60)
+                        .toString()
+                        .padStart(2, "0")}
+                    </span>
+                  )}
+                </div>
               )}
               <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors border-2 border-dashed border-gray-300">
                 <Upload size={20} />
@@ -194,7 +275,9 @@ const EpisodeForm = () => {
                 />
               </label>
             </div>
-            <p className="mt-2 text-sm text-gray-500">MP3 format, up to 100MB</p>
+            <p className="mt-2 text-sm text-gray-500">
+              MP3 format, up to 100MB. Maximum 5 minutes recommended.
+            </p>
           </div>
 
           {/* Submit Buttons */}
@@ -208,7 +291,7 @@ const EpisodeForm = () => {
             </button>
             <button
               type="button"
-              onClick={() => navigate('/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c')}
+              onClick={() => navigate("/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c")}
               className="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
             >
               Cancel
@@ -221,4 +304,3 @@ const EpisodeForm = () => {
 };
 
 export default EpisodeForm;
-

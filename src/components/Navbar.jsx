@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate, useLocation } from "react-router-dom";
 import WetPaintButton from "./UI/WetButton";
 import Button from "./UI/Button";
 import { div } from "motion/react-client";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setIsMenuOpen(false);
+  };
 
   // Animation variants for the mobile menu
   const menuVariants = {
@@ -53,31 +61,50 @@ const Navbar = () => {
     <div className="w-full grid place-items-center bg-dark">
       <nav className="flex justify-between items-center w-full md:w-[80%] px-[1rem] md:px-[2rem] py-[1.5rem] text-white">
         <img
-          className="w-[60px] h-[60px] md:w-[80px] md:h-[80px]"
-          src="/src/assets/logo-white.png"
+          onClick={() => navigate("/")}
+          className="w-[60px] h-[60px] md:w-[80px] md:h-[80px] cursor-pointer"
+          src="/assets/logo-white.png"
           alt="logo"
+          loading="eager"
+          fetchPriority="high"
         />
-        
+
         {/* Desktop Menu */}
         <div className="hidden md:flex gap-8 items-center">
           <ul className="flex gap-[2rem] text-[1.2rem]">
-            {["Home", "Episodes", "Reviews"].map((item) => (
+            {[
+              { name: "Home", path: "/" },
+              { name: "Episodes", path: "/episodes" },
+              { name: "Reviews", path: "/reviews" },
+            ].map((item) => (
               <li
-                key={item}
-                className="relative cursor-pointer font-semibold text-white 
+                key={item.name}
+                onClick={() => handleNavigation(item.path)}
+                className={`relative cursor-pointer font-semibold 
                          after:content-[''] after:absolute after:left-0 after:bottom-[-4px]
                          after:w-0 after:h-[2px] after:bg-[#FCAB1C]
                          after:transition-all after:duration-300
-                         hover:text-[#FCAB1C] hover:after:w-full"
+                         hover:text-[#FCAB1C] hover:after:w-full
+                         ${
+                           location.pathname === item.path
+                             ? "text-[#FCAB1C] after:w-full"
+                             : "text-white"
+                         }`}
               >
-                {item}
+                {item.name}
               </li>
             ))}
           </ul>
-          <Button
-            text="Subscribe"
-            className="bg-primary text-dark hover:bg-primary/80 transition-none"
-          />
+          <a
+            href="https://www.youtube.com/@GroupChatIRLPodcast"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button
+              text="Subscribe"
+              className="bg-primary text-dark hover:bg-primary/80 transition-none"
+            />
+          </a>
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -125,24 +152,34 @@ const Navbar = () => {
 
               {/* Menu Items - Left Aligned */}
               <motion.ul className="flex flex-col justify-center h-full px-4 xs:px-6 sm:px-8 gap-2 xs:gap-3">
-                {["Home", "Episodes", "Reviews"].map((item, index) => (
+                {[
+                  { name: "Home", path: "/" },
+                  { name: "Episodes", path: "/episodes" },
+                  { name: "Reviews", path: "/reviews" },
+                ].map((item, index) => (
                   <motion.li
-                    key={item}
+                    key={item.name}
                     variants={itemVariants}
                     className="cursor-pointer font-black text-white text-2xl xs:text-3xl sm:text-4xl hover:text-primary transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => handleNavigation(item.path)}
                     whileHover={{ x: 10 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {item}
+                    {item.name}
                   </motion.li>
                 ))}
-                <motion.div variants={itemVariants} className="mt-2">
+                <motion.a
+                  variants={itemVariants}
+                  href="https://www.youtube.com/@GroupChatIRLPodcast"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2"
+                >
                   <Button
                     text="Subscribe"
                     className="bg-primary text-dark hover:bg-primary/80 transition-none px-4 xs:px-6 py-2 xs:py-2.5 text-sm xs:text-base"
                   />
-                </motion.div>
+                </motion.a>
               </motion.ul>
             </motion.div>
           )}

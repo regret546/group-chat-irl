@@ -1,14 +1,21 @@
 import { div } from "motion/react-client";
+import { useNavigate } from "react-router-dom";
 import Button from "../components/UI/Button";
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  const handleEpisodesClick = () => {
+    navigate('/episodes');
+  };
+
   return (
     <section className="bg-primary grid place-items-center py-[1rem] md:py-[2rem]">
       <div className="flex-col md:flex-row md:flex justify-center p-[1rem] md:p-[2rem] pb-0 relative w-full md:w-[80%]">
         {/* LEFT CONTENT */}
         <div className="w-full md:w-1/2 flex pb-[2rem]">
           <div className="w-full md:w-[85%]">
-            <img src="/src/assets/irl-card.png" alt="card" className="w-full" />
+            <img src="/assets/irl-card.png" alt="card" className="w-full" loading="eager" fetchPriority="high" />
             <p className="text-[1rem] md:text-[1.25rem] mt-4">
               Weekly Bardagulan with Vivax and Friends. Lorem Ipsum is simply
               dummy text of the printing and typesetting industry. Lorem Ipsum
@@ -21,6 +28,7 @@ const Home = () => {
             </p>
             <Button
               text="All Episodes"
+              onClick={handleEpisodesClick}
               className="bg-accent hover:bg-accent/80 mt-[1rem] px-[2rem] md:px-[3rem] transition-none w-full md:w-auto"
             />
           </div>
@@ -30,8 +38,9 @@ const Home = () => {
         <div className="w-full md:w-1/2 flex justify-center md:justify-end">
           <img
             className="w-full h-auto max-w-full md:max-w-[900px] object-contain"
-            src="/src/assets/group-photo.png"
+            src="/assets/group-photo.png"
             alt="Group photo"
+            loading="eager"
           />
         </div>
       </div>

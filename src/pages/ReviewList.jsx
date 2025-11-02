@@ -1,41 +1,78 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
+import { useNotification } from '../contexts/NotificationContext';
+import Swal from 'sweetalert2';
 
 const ReviewList = () => {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
-    // TODO: Fetch reviews from your backend API
-    // fetch('YOUR_API_ENDPOINT/reviews')
-    //   .then(res => res.json())
-    //   .then(data => setReviews(data))
-    //   .catch(err => console.error(err));
-
-    // Sample data for demonstration
-    setReviews([
-      {
-        id: 1,
-        title: 'John Doe',
-        review: 'Absolutely fantastic podcast! The discussions are engaging and thought-provoking.',
-        picture: '/src/assets/thumbnail.jpg'
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch('/api/reviews');
+        if (response.ok) {
+          const data = await response.json();
+          setReviews(data);
+        } else {
+          console.error('Error fetching reviews');
+        }
+      } catch (err) {
+        console.error('Error fetching reviews:', err);
       }
-    ]);
+    };
+    
+    fetchReviews();
   }, []);
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this review?')) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (result.isConfirmed) {
       try {
-        // TODO: Delete request to your backend API
-        // await fetch(`YOUR_API_ENDPOINT/reviews/${id}`, { method: 'DELETE' });
+        const token = localStorage.getItem('adminToken');
+        const response = await fetch(`/api/reviews/${id}`, { 
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         
-        setReviews(reviews.filter(review => review.id !== id));
-        console.log('Deleted review:', id);
-        alert('Review deleted successfully!');
+        if (response.ok) {
+          setReviews(reviews.filter(review => review._id !== id));
+          showNotification('success', 'Review deleted successfully!');
+          Swal.fire(
+            'Deleted!',
+            'Review has been deleted.',
+            'success'
+          );
+        } else {
+          showNotification('error', 'Error deleting review');
+          Swal.fire(
+            'Error!',
+            'Could not delete review.',
+            'error'
+          );
+        }
       } catch (error) {
         console.error('Error deleting review:', error);
-        alert('Error deleting review');
+        showNotification('error', 'Error deleting review');
+        Swal.fire(
+          'Error!',
+          'An error occurred while deleting the review.',
+          'error'
+        );
       }
     }
   };
@@ -66,35 +103,36 @@ const ReviewList = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {reviews.map((review) => (
               <div 
-                key={review.id} 
+                key={review._id} 
                 className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
               >
                 {/* Reviewer Picture */}
                 <div className="flex justify-center mb-4">
                   <img 
-                    src={review.picture} 
-                    alt={review.title}
+                    src={review.reviewerPicUrl || 'https://i.pravatar.cc/150'} 
+                    alt={review.reviewerName}
                     className="w-24 h-24 object-cover rounded-full border-4 border-primary"
+                    loading="lazy"
                   />
                 </div>
                 
                 {/* Details */}
                 <div className="text-center mb-4">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{review.title}</h3>
-                  <p className="text-gray-600 text-sm line-clamp-4">{review.review}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{review.reviewerName}</h3>
+                  <p className="text-gray-600 text-sm line-clamp-4">{review.reviewText}</p>
                 </div>
 
                 {/* Actions */}
                 <div className="flex gap-2 mt-4">
                   <button
-                    onClick={() => navigate(`/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c/reviews/edit/${review.id}`)}
+                    onClick={() => navigate(`/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c/reviews/edit/${review._id}`)}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     <Edit size={16} />
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(review.id)}
+                    onClick={() => handleDelete(review._id)}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                   >
                     <Trash2 size={16} />
