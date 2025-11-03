@@ -75,8 +75,8 @@ const Latest = () => {
           className={"w-[180px] md:w-[200px] h-[45px] md:h-[50px] mt-2 md:mt-5"}
         />
 
-        {/* Mobile Layout - Stacked */}
-        <div className="flex flex-col md:hidden gap-6 w-full items-center px-4 max-w-full">
+        {/* Mobile Layout - Stacked Vertical */}
+        <div className="flex flex-col md:hidden gap-4 w-full items-center px-4 max-w-full">
           {/* Thumbnail */}
           <img
             className="w-[min(280px,90vw)] h-[min(280px,90vw)] object-cover shadow-lg"
@@ -90,19 +90,28 @@ const Latest = () => {
             {latestEpisode.title}
           </h2>
 
-          {/* Audio Player Controls - Same as Desktop */}
-          <div className="w-full flex flex-col">
-            <div className="flex items-center gap-2 text-white">
-              {/* Hidden audio element */}
-              <audio
-                ref={audioRef}
-                src={latestEpisode.audioUrl || episode8Fallback}
-                preload="metadata"
+          {/* Audio Player Controls - Vertical Stack */}
+          <div className="w-full flex flex-col items-center gap-3">
+            {/* Hidden audio element */}
+            <audio
+              ref={audioRef}
+              src={latestEpisode.audioUrl || episode8Fallback}
+              preload="metadata"
+            />
+            
+            {/* Waveform on top */}
+            <div className="w-full">
+              <Waveform
+                audioUrl={latestEpisode.audioUrl || episode8Fallback}
+                audioRef={audioRef}
               />
-              
+            </div>
+
+            {/* Playback controls in the middle */}
+            <div className="flex items-center gap-4 text-white">
               {/* Back 10s */}
               <i
-                className="fa-solid fa-rotate-left relative cursor-pointer"
+                className="fa-solid fa-rotate-left relative cursor-pointer text-2xl"
                 onClick={() => handleSkip(-10)}
               >
                 <span className="absolute text-[0.6rem] left-[13px] top-[12px]">
@@ -112,7 +121,7 @@ const Latest = () => {
 
               {/* Play / Pause */}
               <i
-                className={`text-[2.5rem] fa-solid ${
+                className={`text-[3rem] fa-solid ${
                   isPlaying ? "fa-pause" : "fa-play"
                 } cursor-pointer`}
                 onClick={handlePlayPause}
@@ -120,51 +129,46 @@ const Latest = () => {
 
               {/* Forward 30s */}
               <i
-                className="fa-solid fa-rotate-right relative cursor-pointer"
+                className="fa-solid fa-rotate-right relative cursor-pointer text-2xl"
                 onClick={() => handleSkip(30)}
               >
                 <span className="absolute text-[0.6rem] left-[13px] top-[12px]">
                   30
                 </span>
               </i>
-
-              {/* Waveform visualization */}
-              <div className="flex-1 min-w-0">
-                <Waveform
-                  audioUrl={latestEpisode.audioUrl || episode8Fallback}
-                  audioRef={audioRef}
-                />
-              </div>
-
-              {latestEpisode.youtubeUrl && (
-                <a
-                  href={latestEpisode.youtubeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 bg-accent text-dark font-semibold rounded-lg hover:bg-accent/80 transition-colors text-nowrap text-sm flex-shrink-0"
-                >
-                  Watch Full Video
-                </a>
-              )}
             </div>
+
+            {/* Watch Full Video button at bottom */}
+            {latestEpisode.youtubeUrl && (
+              <a
+                href={latestEpisode.youtubeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full px-3 py-2 bg-accent text-dark font-semibold rounded-lg hover:bg-accent/80 transition-colors text-sm text-center"
+              >
+                Watch Full Video
+              </a>
+            )}
           </div>
         </div>
 
-        {/* Desktop Layout - Side by Side */}
-        <div className="hidden md:flex flex-row gap-4 w-full">
+        {/* Desktop Layout - Responsive Column */}
+        <div className="hidden md:flex flex-col lg:flex-row gap-6 w-full items-start">
+          {/* Thumbnail */}
           <img
-            className="w-[500px] h-[300px] object-cover flex-shrink-0"
+            className="w-full lg:w-[400px] h-[250px] lg:h-[300px] object-cover flex-shrink-0"
             src={latestEpisode.thumbnailUrl || thumbnailFallback}
             alt={latestEpisode.title}
             loading="eager"
           />
 
-          <div className="w-full flex flex-col">
-            <h2 className="text-white text-3xl mb-6">
+          <div className="w-full flex flex-col gap-4">
+            <h2 className="text-white text-2xl lg:text-3xl">
               {latestEpisode.title}
             </h2>
 
-            <div className="flex items-center gap-3 text-white">
+            {/* Audio Player Controls - Vertical Stack */}
+            <div className="w-full flex flex-col gap-4">
               {/* Hidden audio element */}
               <audio
                 ref={audioRef}
@@ -172,48 +176,52 @@ const Latest = () => {
                 preload="metadata"
               />
               
-              {/* Back 10s */}
-              <i
-                className="fa-solid fa-rotate-left relative cursor-pointer"
-                onClick={() => handleSkip(-10)}
-              >
-                <span className="absolute text-[0.6rem] left-[13px] top-[12px]">
-                  10
-                </span>
-              </i>
-
-              {/* Play / Pause */}
-              <i
-                className={`text-[2.5rem] fa-solid ${
-                  isPlaying ? "fa-pause" : "fa-play"
-                } cursor-pointer`}
-                onClick={handlePlayPause}
-              ></i>
-
-              {/* Forward 30s */}
-              <i
-                className="fa-solid fa-rotate-right relative cursor-pointer"
-                onClick={() => handleSkip(30)}
-              >
-                <span className="absolute text-[0.6rem] left-[13px] top-[12px]">
-                  30
-                </span>
-              </i>
-
-              {/* Waveform visualization */}
-              <div className="flex-1 min-w-0">
+              {/* Waveform on top */}
+              <div className="w-full">
                 <Waveform
                   audioUrl={latestEpisode.audioUrl || episode8Fallback}
                   audioRef={audioRef}
                 />
               </div>
 
+              {/* Playback controls in the middle */}
+              <div className="flex items-center justify-center gap-6 text-white">
+                {/* Back 10s */}
+                <i
+                  className="fa-solid fa-rotate-left relative cursor-pointer text-3xl"
+                  onClick={() => handleSkip(-10)}
+                >
+                  <span className="absolute text-[0.7rem] left-[15px] top-[15px]">
+                    10
+                  </span>
+                </i>
+
+                {/* Play / Pause */}
+                <i
+                  className={`text-[4rem] fa-solid ${
+                    isPlaying ? "fa-pause" : "fa-play"
+                  } cursor-pointer`}
+                  onClick={handlePlayPause}
+                ></i>
+
+                {/* Forward 30s */}
+                <i
+                  className="fa-solid fa-rotate-right relative cursor-pointer text-3xl"
+                  onClick={() => handleSkip(30)}
+                >
+                  <span className="absolute text-[0.7rem] left-[15px] top-[15px]">
+                    30
+                  </span>
+                </i>
+              </div>
+
+              {/* Watch Full Video button at bottom */}
               {latestEpisode.youtubeUrl && (
                 <a
                   href={latestEpisode.youtubeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 bg-accent text-dark font-semibold rounded-lg hover:bg-accent/80 transition-colors text-nowrap flex-shrink-0"
+                  className="w-full px-4 py-3 bg-accent text-dark font-semibold rounded-lg hover:bg-accent/80 transition-colors text-center"
                 >
                   Watch Full Video
                 </a>
