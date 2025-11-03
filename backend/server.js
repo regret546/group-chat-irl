@@ -10,9 +10,17 @@ const reviewRoutes = require("./routes/reviews");
 
 const app = express();
 app.use(cors());
+
 // Increase body parser limits for large file uploads
+// Note: These settings don't affect multer file uploads (handled separately)
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
+
+// Add request logging for debugging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - Content-Type: ${req.headers['content-type']}`);
+  next();
+});
 
 // Serve uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

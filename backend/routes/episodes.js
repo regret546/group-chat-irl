@@ -7,10 +7,18 @@ const epCtrl = require("../controllers/episodeController");
 
 // Error handling middleware for Multer errors
 const handleUploadError = (err, req, res, next) => {
+  console.error('Upload error:', err);
+  
   if (err instanceof multer.MulterError) {
+    console.error('Multer error code:', err.code);
     if (err.code === 'LIMIT_FILE_SIZE') {
       return res.status(413).json({ 
         message: 'File too large. Maximum file size is 100MB.' 
+      });
+    }
+    if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+      return res.status(400).json({ 
+        message: 'Unexpected file field. Expected: thumbnail and audio.' 
       });
     }
     return res.status(400).json({ 

@@ -17,18 +17,25 @@ function secondsToHms(d) {
 
 exports.createEpisode = async (req, res) => {
   try {
+    console.log('Creating episode, received files:', Object.keys(req.files || {}));
+    console.log('Request body:', req.body);
+    
     // files: thumbnail and audio (multer will put them in req.files)
     const files = req.files || {};
     let thumbnailPath, audioPath;
     if (files.thumbnail && files.thumbnail[0]) {
       thumbnailPath = `/uploads/images/${files.thumbnail[0].filename}`;
+      console.log('Thumbnail path:', thumbnailPath);
     }
     if (files.audio && files.audio[0]) {
       audioPath = `/uploads/audio/${files.audio[0].filename}`;
+      console.log('Audio path:', audioPath);
     }
     const { title, description, youtubeUrl } = req.body;
-    if (!title || !audioPath || !youtubeUrl)
+    if (!title || !audioPath || !youtubeUrl) {
+      console.log('Validation failed - Missing required fields');
       return res.status(400).json({ message: "Title, audio, and YouTube URL are required" });
+    }
 
     // get duration
     let durationSeconds = null;
