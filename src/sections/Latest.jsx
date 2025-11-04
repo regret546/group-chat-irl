@@ -110,14 +110,15 @@ const Latest = () => {
             {/* Playback controls in the middle */}
             <div className="flex items-center gap-4 text-white">
               {/* Back 10s */}
-              <i
-                className="fa-solid fa-rotate-left relative cursor-pointer text-2xl"
+              <button
+                className="relative cursor-pointer text-2xl flex items-center justify-center w-10 h-10"
                 onClick={() => handleSkip(-10)}
               >
-                <span className="absolute text-[0.6rem] left-[13px] top-[12px]">
+                <i className="fa-solid fa-rotate-left"></i>
+                <span className="absolute text-[0.6rem] font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-dark">
                   10
                 </span>
-              </i>
+              </button>
 
               {/* Play / Pause */}
               <i
@@ -128,14 +129,15 @@ const Latest = () => {
               ></i>
 
               {/* Forward 30s */}
-              <i
-                className="fa-solid fa-rotate-right relative cursor-pointer text-2xl"
+              <button
+                className="relative cursor-pointer text-2xl flex items-center justify-center w-10 h-10"
                 onClick={() => handleSkip(30)}
               >
-                <span className="absolute text-[0.6rem] left-[13px] top-[12px]">
+                <i className="fa-solid fa-rotate-right"></i>
+                <span className="absolute text-[0.6rem] font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-dark">
                   30
                 </span>
-              </i>
+              </button>
             </div>
 
             {/* Watch Full Video button at bottom */}
@@ -187,14 +189,15 @@ const Latest = () => {
               {/* Playback controls in the middle */}
               <div className="flex items-center justify-center gap-6 text-white">
                 {/* Back 10s */}
-                <i
-                  className="fa-solid fa-rotate-left relative cursor-pointer text-3xl"
+                <button
+                  className="relative cursor-pointer text-3xl flex items-center justify-center w-12 h-12"
                   onClick={() => handleSkip(-10)}
                 >
-                  <span className="absolute text-[0.7rem] left-[15px] top-[15px]">
+                  <i className="fa-solid fa-rotate-left"></i>
+                  <span className="absolute text-[0.7rem] font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-dark">
                     10
                   </span>
-                </i>
+                </button>
 
                 {/* Play / Pause */}
                 <i
@@ -205,14 +208,15 @@ const Latest = () => {
                 ></i>
 
                 {/* Forward 30s */}
-                <i
-                  className="fa-solid fa-rotate-right relative cursor-pointer text-3xl"
+                <button
+                  className="relative cursor-pointer text-3xl flex items-center justify-center w-12 h-12"
                   onClick={() => handleSkip(30)}
                 >
-                  <span className="absolute text-[0.7rem] left-[15px] top-[15px]">
+                  <i className="fa-solid fa-rotate-right"></i>
+                  <span className="absolute text-[0.7rem] font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-dark">
                     30
                   </span>
-                </i>
+                </button>
               </div>
 
               {/* Watch Full Video button at bottom */}
