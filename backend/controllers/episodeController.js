@@ -1,5 +1,4 @@
 const path = require("path");
-const { parseFile } = require("music-metadata");
 const Episode = require("../models/Episode");
 
 function secondsToHms(d) {
@@ -43,6 +42,8 @@ exports.createEpisode = async (req, res) => {
     if (audioPath) {
       const fileOnDisk = path.join(__dirname, "..", audioPath);
       try {
+        // Dynamic import for ES module
+        const { parseFile } = await import("music-metadata");
         const meta = await parseFile(
           path.join(
             __dirname,
