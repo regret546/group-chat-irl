@@ -704,7 +704,143 @@ Now you can:
 
 ---
 
-**Your podcast site is now live! 🎉**
+## Part 11: Set Up Automated Deployment (GitHub Actions)
+
+Automate deployments so that when you push to GitHub, your server automatically updates!
+
+### Step 1: Generate SSH Key Pair on Your Local Machine
+
+```bash
+# On your local machine (not the server)
+ssh-keygen -t ed25519 -C "github-actions" -f ~/.ssh/github_actions_deploy
+
+# This creates two files:
+# ~/.ssh/github_actions_deploy (private key - keep secret!)
+# ~/.ssh/github_actions_deploy.pub (public key - add to server)
+```
+
+### Step 2: Add Public Key to Your Server
+
+```bash
+# Copy the public key content
+cat ~/.ssh/github_actions_deploy.pub
+
+# On your server, add it to authorized_keys
+ssh root@YOUR_SERVER_IP
+
+# Then on the server:
+mkdir -p ~/.ssh
+echo "PASTE_YOUR_PUBLIC_KEY_HERE" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+chmod 700 ~/.ssh
+```
+
+### Step 3: Configure GitHub Secrets
+
+1. Go to your GitHub repository
+2. Click **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret** and add these secrets:
+
+**Secret 1: SSH_PRIVATE_KEY**
+
+- Name: `SSH_PRIVATE_KEY`
+- Value: Copy the entire content of `~/.ssh/github_actions_deploy` (the private key)
+  ```bash
+  # On your local machine:
+  cat ~/.ssh/github_actions_deploy
+  ```
+  Copy everything including `-----BEGIN OPENSSH PRIVATE KEY-----` and `-----END OPENSSH PRIVATE KEY-----`
+
+**Secret 2: SERVER_HOST**
+
+- Name: `SERVER_HOST`
+- Value: Your server IP (e.g., `72.60.43.15`) or domain name
+
+**Secret 3: SERVER_USER**
+
+- Name: `SERVER_USER`
+- Value: Your SSH username (usually `root`)
+
+### Step 4: Test the Deployment
+
+1. Make a small change to your code (e.g., update README.md)
+2. Commit and push to GitHub:
+   ```bash
+   git add .
+   git commit -m "Test automated deployment"
+   git push origin main
+   ```
+3. Go to your GitHub repository → **Actions** tab
+4. You should see the deployment workflow running
+5. Once complete, check your server to verify changes are deployed
+
+### Step 5: Verify Deployment
+
+```bash
+# SSH into your server
+ssh root@YOUR_SERVER_IP
+
+# Check if the latest changes are there
+cd /var/www/group-chat-irl
+git log -1
+
+# Check PM2 status
+pm2 status
+
+# View deployment logs
+pm2 logs group-chat-backend
+```
+
+### Troubleshooting
+
+**If deployment fails:**
+
+1. **Check GitHub Actions logs** in the Actions tab
+2. **Verify SSH key** is correctly added to server
+3. **Check PM2** is installed and running:
+   ```bash
+   pm2 list
+   ```
+4. **Verify sudo access** - the script needs sudo for nginx reload
+   ```bash
+   # Test sudo access
+   sudo -n systemctl reload nginx
+   ```
+
+**To allow passwordless sudo for nginx reload:**
+
+```bash
+# On your server
+sudo visudo
+
+# Add this line (replace USERNAME with your SSH user, usually root):
+USERNAME ALL=(ALL) NOPASSWD: /bin/systemctl reload nginx
+```
+
+**Or use a safer approach - create a deployment user:**
+
+```bash
+# Create a deployment user
+sudo adduser deployer
+sudo usermod -aG sudo deployer
+
+# Add SSH key for deployer user
+sudo su - deployer
+mkdir -p ~/.ssh
+echo "YOUR_PUBLIC_KEY" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+chmod 700 ~/.ssh
+
+# Give deployer permission to reload nginx
+sudo visudo
+# Add: deployer ALL=(ALL) NOPASSWD: /bin/systemctl reload nginx
+```
+
+Then update your GitHub secret `SERVER_USER` to `deployer`.
+
+---
+
+**Your podcast site is now live with automated deployment! 🎉**
 
 Visit: **https://groupchatirl.blog**
 
@@ -713,5 +849,6 @@ For issues or questions, refer to the troubleshooting section or check:
 - `pm2 logs` for backend errors
 - `/var/log/nginx/error.log` for nginx errors
 - MongoDB logs for database issues
+- GitHub Actions logs for deployment issues
 
 Good luck with your podcast! 🎙️✨
