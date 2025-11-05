@@ -1,18 +1,30 @@
-import React from "react";
+import React, { memo } from "react";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import logoBlack from "../assets/logo-black.png";
 
-const Footer = () => {
+const Footer = memo(() => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-primary text-dark grid place-items-center">
+    <motion.div 
+      className="bg-primary text-dark grid place-items-center"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+    >
       <div className="flex flex-col md:flex-row justify-evenly items-center w-full md:w-[80%] gap-6 md:gap-0 py-6 md:py-8">
-        <img
+        <motion.img
           className="w-[100px] md:w-[150px]"
           src={logoBlack}
           alt="logo"
           loading="lazy"
+          decoding="async"
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
         />
         <div className="grid gap-2 text-center md:text-left">
           <h3 className="text-[1.1rem] md:text-[1.2rem] font-bold">
@@ -55,9 +67,11 @@ const Footer = () => {
       </div>
       <p className="bg-dark w-full grid place-items-center text-white py-4 text-sm md:text-base text-center px-4">
         GroupChat IRL Podcast &copy; 2025. All Rights Reserved.
-      </p>
-    </div>
+        </p>
+    </motion.div>
   );
-};
+});
+
+Footer.displayName = "Footer";
 
 export default Footer;

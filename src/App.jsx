@@ -1,31 +1,40 @@
 import "./style.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import { NotificationProvider } from "./contexts/NotificationContext";
-import HomePage from "./pages/HomePage";
-import Login from "./pages/Login";
-import Admin from "./pages/Admin";
-import EpisodeForm from "./pages/EpisodeForm";
-import ReviewForm from "./pages/ReviewForm";
-import EpisodeList from "./pages/EpisodeList";
-import ReviewList from "./pages/ReviewList";
-import Episodes from "./pages/Episodes";
-import ReviewsPage from "./pages/Reviews";
 import ProtectedRoute from "./components/ProtectedRoute";
+import LoadingScreen from "./components/LoadingScreen";
+import ScrollToTop from "./components/ScrollToTop";
+import PageTransition from "./components/PageTransition";
 
-function App() {
+// Lazy load routes for code splitting
+const HomePage = lazy(() => import("./pages/HomePage"));
+const Login = lazy(() => import("./pages/Login"));
+const Admin = lazy(() => import("./pages/Admin"));
+const EpisodeForm = lazy(() => import("./pages/EpisodeForm"));
+const ReviewForm = lazy(() => import("./pages/ReviewForm"));
+const EpisodeList = lazy(() => import("./pages/EpisodeList"));
+const ReviewList = lazy(() => import("./pages/ReviewList"));
+const Episodes = lazy(() => import("./pages/Episodes"));
+const ReviewsPage = lazy(() => import("./pages/Reviews"));
+
+function AppContent() {
   return (
-    <NotificationProvider>
-      <Router>
+    <>
+      <ScrollToTop />
+      <Suspense fallback={<LoadingScreen />}>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/episodes" element={<Episodes />} />
-          <Route path="/reviews" element={<ReviewsPage />} />
-          <Route path="/admin-login" element={<Login />} />
+          <Route path="/" element={<PageTransition><HomePage /></PageTransition>} />
+          <Route path="/episodes" element={<PageTransition><Episodes /></PageTransition>} />
+          <Route path="/reviews" element={<PageTransition><ReviewsPage /></PageTransition>} />
+          <Route path="/admin-login" element={<PageTransition><Login /></PageTransition>} />
           <Route 
             path="/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c" 
             element={
               <ProtectedRoute>
-                <Admin />
+                <PageTransition>
+                  <Admin />
+                </PageTransition>
               </ProtectedRoute>
             } 
           />
@@ -33,7 +42,9 @@ function App() {
             path="/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c/episodes/new" 
             element={
               <ProtectedRoute>
-                <EpisodeForm />
+                <PageTransition>
+                  <EpisodeForm />
+                </PageTransition>
               </ProtectedRoute>
             } 
           />
@@ -41,7 +52,9 @@ function App() {
             path="/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c/episodes/list" 
             element={
               <ProtectedRoute>
-                <EpisodeList />
+                <PageTransition>
+                  <EpisodeList />
+                </PageTransition>
               </ProtectedRoute>
             } 
           />
@@ -49,7 +62,9 @@ function App() {
             path="/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c/episodes/edit/:id" 
             element={
               <ProtectedRoute>
-                <EpisodeForm />
+                <PageTransition>
+                  <EpisodeForm />
+                </PageTransition>
               </ProtectedRoute>
             } 
           />
@@ -57,7 +72,9 @@ function App() {
             path="/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c/reviews/new" 
             element={
               <ProtectedRoute>
-                <ReviewForm />
+                <PageTransition>
+                  <ReviewForm />
+                </PageTransition>
               </ProtectedRoute>
             } 
           />
@@ -65,7 +82,9 @@ function App() {
             path="/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c/reviews/list" 
             element={
               <ProtectedRoute>
-                <ReviewList />
+                <PageTransition>
+                  <ReviewList />
+                </PageTransition>
               </ProtectedRoute>
             } 
           />
@@ -73,11 +92,23 @@ function App() {
             path="/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c/reviews/edit/:id" 
             element={
               <ProtectedRoute>
-                <ReviewForm />
+                <PageTransition>
+                  <ReviewForm />
+                </PageTransition>
               </ProtectedRoute>
             } 
           />
         </Routes>
+      </Suspense>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <NotificationProvider>
+      <Router>
+        <AppContent />
       </Router>
     </NotificationProvider>
   );

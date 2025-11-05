@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import WetPaintButton from "./UI/WetButton";
 import Button from "./UI/Button";
-import { div } from "motion/react-client";
 import logoWhite from "../assets/logo-white.png";
 
-const Navbar = () => {
+const Navbar = memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -188,6 +187,8 @@ const Navbar = () => {
       </nav>
     </div>
   );
-};
+});
+
+Navbar.displayName = "Navbar";
 
 export default Navbar;

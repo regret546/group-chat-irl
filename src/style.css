@@ -22,6 +22,7 @@
     font-family: "Fredoka", sans-serif;
     letter-spacing: 0.1em;
     overflow-x: hidden;
+    scroll-behavior: smooth;
   }
   body {
     overflow-x: hidden;
@@ -35,4 +36,15 @@
       @apply text-[2rem] text-white;
     }
   }
+}
+
+/* Performance optimizations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }

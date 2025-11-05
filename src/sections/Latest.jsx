@@ -1,16 +1,17 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, memo, useCallback } from "react";
+import { motion } from "framer-motion";
 import WetPaintButton from "../components/UI/WetButton";
 import Waveform from "../components/UI/Waveform";
 import thumbnailFallback from "../assets/thumbnail.jpg";
 import episode8Fallback from "../assets/episode8.mp3";
 
-const Latest = () => {
+const Latest = memo(() => {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [latestEpisode, setLatestEpisode] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const handlePlayPause = () => {
+  const handlePlayPause = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -21,14 +22,14 @@ const Latest = () => {
     }
 
     setIsPlaying(!isPlaying);
-  };
+  }, [isPlaying]);
 
-  const handleSkip = (seconds) => {
+  const handleSkip = useCallback((seconds) => {
     const audio = audioRef.current;
     if (audio) {
       audio.currentTime = Math.max(0, audio.currentTime + seconds);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const fetchLatestEpisode = async () => {
@@ -70,19 +71,37 @@ const Latest = () => {
   return (
     <section className="latest w-full grid justify-items-center min-h-[500px] bg-dark pb-[2rem] py-4 overflow-x-hidden">
       <div className="p-4 w-full md:w-[80%] grid justify-items-center gap-[2rem] md:gap-[3rem] max-w-full">
-        <WetPaintButton
-          text={"Latest Episode"}
-          className={"w-[180px] md:w-[200px] h-[45px] md:h-[50px] mt-2 md:mt-5"}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <WetPaintButton
+            text={"Latest Episode"}
+            className={"w-[180px] md:w-[200px] h-[45px] md:h-[50px] mt-2 md:mt-5"}
+          />
+        </motion.div>
 
         {/* Mobile Layout - Stacked Vertical */}
-        <div className="flex flex-col md:hidden gap-4 w-full items-center px-4 max-w-full">
+        <motion.div 
+          className="flex flex-col md:hidden gap-4 w-full items-center px-4 max-w-full"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           {/* Thumbnail */}
-          <img
+          <motion.img
             className="w-[min(280px,90vw)] h-[min(280px,90vw)] object-cover shadow-lg"
             src={latestEpisode.thumbnailUrl || thumbnailFallback}
             alt={latestEpisode.title}
             loading="eager"
+            decoding="async"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           />
 
           {/* Episode Title */}
@@ -152,16 +171,27 @@ const Latest = () => {
               </a>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Desktop Layout - Responsive Column */}
-        <div className="hidden md:flex flex-col lg:flex-row gap-6 w-full items-start">
+        <motion.div 
+          className="hidden md:flex flex-col lg:flex-row gap-6 w-full items-start"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           {/* Thumbnail */}
-          <img
+          <motion.img
             className="w-full lg:w-[400px] h-[250px] lg:h-[300px] object-cover flex-shrink-0"
             src={latestEpisode.thumbnailUrl || thumbnailFallback}
             alt={latestEpisode.title}
             loading="eager"
+            decoding="async"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           />
 
           <div className="w-full flex flex-col gap-4">
@@ -232,10 +262,12 @@ const Latest = () => {
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
-};
+});
+
+Latest.displayName = "Latest";
 
 export default Latest;
