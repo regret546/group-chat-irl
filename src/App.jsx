@@ -21,14 +21,7 @@ function AppContent() {
   return (
     <>
       <ScrollToTop />
-      <Suspense fallback={
-        <div className="fixed inset-0 bg-dark z-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-primary text-lg">Loading...</p>
-          </div>
-        </div>
-      }>
+      <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<PageTransition><HomePage /></PageTransition>} />
           <Route path="/episodes" element={<PageTransition><Episodes /></PageTransition>} />
