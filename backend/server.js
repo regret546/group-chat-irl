@@ -7,6 +7,7 @@ const path = require("path");
 const authRoutes = require("./routes/auth");
 const episodeRoutes = require("./routes/episodes");
 const reviewRoutes = require("./routes/reviews");
+const messageRoutes = require("./routes/messages");
 
 const app = express();
 app.use(cors());
@@ -29,6 +30,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/episodes", episodeRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/messages", messageRoutes);
 
 const PORT = process.env.PORT || 5000;
 

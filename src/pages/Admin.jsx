@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PlusCircle, List, Home, LogOut, Key, Eye, EyeOff } from 'lucide-react';
+import { PlusCircle, List, Home, LogOut, Key, Eye, EyeOff, Mail } from 'lucide-react';
 import { useNotification } from '../contexts/NotificationContext';
 
 const Admin = () => {
@@ -148,6 +148,19 @@ const Admin = () => {
               </div>
             </button>
             <button
+              onClick={() => setActiveTab('messages')}
+              className={`py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
+                activeTab === 'messages'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Mail size={18} />
+                Messages
+              </div>
+            </button>
+            <button
               onClick={() => setActiveTab('password')}
               className={`py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
                 activeTab === 'password'
@@ -205,6 +218,21 @@ const Admin = () => {
               >
                 <List size={20} />
                 View All Reviews
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'messages' && (
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Messages</h2>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link 
+                to="/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c/messages"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-dark font-semibold rounded-lg hover:bg-primary/90 transition-colors text-sm sm:text-base"
+              >
+                <Mail size={20} />
+                View All Messages
               </Link>
             </div>
           </div>

@@ -96,14 +96,17 @@ const Navbar = memo(() => {
             ))}
           </ul>
           <a
-            href="https://www.youtube.com/@GroupChatIRLPodcast"
+            href="https://buymeacoffee.com"
             target="_blank"
             rel="noopener noreferrer"
+            className="flex items-center gap-2"
           >
             <Button
-              text="Subscribe"
-              className="bg-primary text-dark hover:bg-primary/80 transition-none"
-            />
+              className="bg-primary text-dark hover:bg-primary/80 transition-none flex items-center gap-2"
+            >
+              <i className="fa-solid fa-mug-hot text-dark"></i>
+              <span>Buy us a coffee</span>
+            </Button>
           </a>
         </div>
 
@@ -170,15 +173,17 @@ const Navbar = memo(() => {
                 ))}
                 <motion.a
                   variants={itemVariants}
-                  href="https://www.youtube.com/@GroupChatIRLPodcast"
+                  href="https://buymeacoffee.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-2"
                 >
                   <Button
-                    text="Subscribe"
-                    className="bg-primary text-dark hover:bg-primary/80 transition-none px-4 xs:px-6 py-2 xs:py-2.5 text-sm xs:text-base"
-                  />
+                    className="bg-primary text-dark hover:bg-primary/80 transition-none px-4 xs:px-6 py-2 xs:py-2.5 text-sm xs:text-base flex items-center gap-2"
+                  >
+                    <i className="fa-solid fa-mug-hot text-dark"></i>
+                    <span>Buy us a coffee</span>
+                  </Button>
                 </motion.a>
               </motion.ul>
             </motion.div>

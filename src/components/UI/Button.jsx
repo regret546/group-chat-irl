@@ -6,6 +6,7 @@ export default function Button({
   padding = "px-6 py-3",
   radius = "rounded-xl",
   className = "",
+  children,
 }) {
   return (
     <motion.button
@@ -15,7 +16,7 @@ export default function Button({
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className={`font-semibold cursor-pointer transition-all duration-300 ${padding} ${radius} ${className}`}
     >
-      {text}
+      {children || text}
     </motion.button>
   );
 }

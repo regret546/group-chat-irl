@@ -14,6 +14,7 @@ const EpisodeForm = lazy(() => import("./pages/EpisodeForm"));
 const ReviewForm = lazy(() => import("./pages/ReviewForm"));
 const EpisodeList = lazy(() => import("./pages/EpisodeList"));
 const ReviewList = lazy(() => import("./pages/ReviewList"));
+const MessageList = lazy(() => import("./pages/MessageList"));
 const Episodes = lazy(() => import("./pages/Episodes"));
 const ReviewsPage = lazy(() => import("./pages/Reviews"));
 
@@ -93,6 +94,16 @@ function AppContent() {
               <ProtectedRoute>
                 <PageTransition>
                   <ReviewForm />
+                </PageTransition>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c/messages" 
+            element={
+              <ProtectedRoute>
+                <PageTransition>
+                  <MessageList />
                 </PageTransition>
               </ProtectedRoute>
             } 
