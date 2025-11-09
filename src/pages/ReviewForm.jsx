@@ -1,17 +1,52 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Upload, Save } from 'lucide-react';
 import { useNotification } from '../contexts/NotificationContext';
 
 const ReviewForm = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const { showNotification } = useNotification();
+  const isEditMode = !!id;
   const [formData, setFormData] = useState({
     reviewerName: '',
     reviewText: '',
   });
   const [reviewerPicture, setReviewerPicture] = useState(null);
   const [picturePreview, setPicturePreview] = useState(null);
+  const [loading, setLoading] = useState(isEditMode);
+
+  useEffect(() => {
+    if (isEditMode) {
+      fetchReview();
+    }
+  }, [id]);
+
+  const fetchReview = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/reviews/${id}`);
+      if (response.ok) {
+        const review = await response.json();
+        setFormData({
+          reviewerName: review.reviewerName || '',
+          reviewText: review.reviewText || '',
+        });
+        if (review.reviewerPicUrl) {
+          setPicturePreview(review.reviewerPicUrl);
+        }
+      } else {
+        showNotification('error', 'Failed to load review');
+        navigate('/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c');
+      }
+    } catch (error) {
+      console.error('Error fetching review:', error);
+      showNotification('error', 'Error loading review');
+      navigate('/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     setFormData({
@@ -48,8 +83,11 @@ const ReviewForm = () => {
     if (reviewerPicture) reviewData.append('reviewerPic', reviewerPicture);
 
     try {
-      const response = await fetch('/api/reviews', {
-        method: 'POST',
+      const url = isEditMode ? `/api/reviews/${id}` : '/api/reviews';
+      const method = isEditMode ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method: method,
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -58,14 +96,14 @@ const ReviewForm = () => {
       const data = await response.json();
       
       if (response.ok) {
-        showNotification('success', 'Review added successfully!');
+        showNotification('success', isEditMode ? 'Review updated successfully!' : 'Review added successfully!');
         setTimeout(() => navigate('/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c'), 1500);
       } else {
-        showNotification('error', data.message || 'Error adding review');
+        showNotification('error', data.message || (isEditMode ? 'Error updating review' : 'Error adding review'));
       }
     } catch (error) {
       console.error('Error submitting review:', error);
-      showNotification('error', 'Error adding review. Check console for details.');
+      showNotification('error', isEditMode ? 'Error updating review. Check console for details.' : 'Error adding review. Check console for details.');
     }
   };
 
@@ -81,13 +119,18 @@ const ReviewForm = () => {
             <ArrowLeft size={20} />
             Back to Dashboard
           </button>
-          <h1 className="text-3xl font-bold">Add New Review</h1>
+          <h1 className="text-3xl font-bold">{isEditMode ? "Edit Review" : "Add New Review"}</h1>
         </div>
       </div>
 
       {/* Form */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 space-y-6">
+        {loading ? (
+          <div className="bg-white rounded-lg shadow-md p-6 text-center">
+            <p className="text-gray-500">Loading review...</p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 space-y-6">
           {/* Reviewer Picture Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -168,6 +211,7 @@ const ReviewForm = () => {
             </button>
           </div>
         </form>
+        )}
       </div>
     </div>
   );

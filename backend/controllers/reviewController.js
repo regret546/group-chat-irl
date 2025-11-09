@@ -35,6 +35,36 @@ exports.getReviews = async (req, res) => {
   res.json(reviews);
 };
 
+exports.getReview = async (req, res) => {
+  const review = await Review.findById(req.params.id);
+  if (!review) return res.status(404).json({ message: "Not found" });
+  res.json(review);
+};
+
+exports.updateReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reviewerName, reviewText } = req.body;
+    
+    const updateData = {};
+    if (reviewerName) updateData.reviewerName = reviewerName;
+    if (reviewText) updateData.reviewText = reviewText;
+    
+    // Handle picture update
+    if (req.file) {
+      updateData.reviewerPicUrl = `/uploads/images/${req.file.filename}`;
+    }
+    
+    const review = await Review.findByIdAndUpdate(id, updateData, { new: true });
+    if (!review) return res.status(404).json({ message: "Review not found" });
+    
+    res.json(review);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 exports.deleteReview = async (req, res) => {
   await Review.findByIdAndDelete(req.params.id);
   res.json({ message: "Deleted" });

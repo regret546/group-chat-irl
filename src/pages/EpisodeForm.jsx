@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Upload, Save, AlertCircle } from "lucide-react";
 import { useNotification } from "../contexts/NotificationContext";
 
 const EpisodeForm = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const { showNotification } = useNotification();
+  const isEditMode = !!id;
   const [formData, setFormData] = useState({
     title: "",
     uploadDate: "",
@@ -17,6 +19,44 @@ const EpisodeForm = () => {
   const [audioFile, setAudioFile] = useState(null);
   const [audioFileName, setAudioFileName] = useState("");
   const [audioDuration, setAudioDuration] = useState(null);
+  const [loading, setLoading] = useState(isEditMode);
+
+  useEffect(() => {
+    if (isEditMode) {
+      fetchEpisode();
+    }
+  }, [id]);
+
+  const fetchEpisode = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/episodes/${id}`);
+      if (response.ok) {
+        const episode = await response.json();
+        setFormData({
+          title: episode.title || "",
+          uploadDate: episode.uploadDate ? new Date(episode.uploadDate).toISOString().split('T')[0] : "",
+          totalTime: episode.durationHuman || episode.description?.replace('Duration: ', '') || "",
+          youtubeUrl: episode.youtubeUrl || "",
+        });
+        if (episode.thumbnailUrl) {
+          setThumbnailPreview(episode.thumbnailUrl);
+        }
+        if (episode.audioUrl) {
+          setAudioFileName(episode.audioUrl.split('/').pop());
+        }
+      } else {
+        showNotification("error", "Failed to load episode");
+        navigate("/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c");
+      }
+    } catch (error) {
+      console.error("Error fetching episode:", error);
+      showNotification("error", "Error loading episode");
+      navigate("/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     setFormData({
@@ -85,8 +125,11 @@ const EpisodeForm = () => {
     if (audioFile) episodeData.append("audio", audioFile);
 
     try {
-      const response = await fetch("/api/episodes", {
-        method: "POST",
+      const url = isEditMode ? `/api/episodes/${id}` : "/api/episodes";
+      const method = isEditMode ? "PUT" : "POST";
+      
+      const response = await fetch(url, {
+        method: method,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -95,19 +138,19 @@ const EpisodeForm = () => {
       const data = await response.json();
 
       if (response.ok) {
-        showNotification("success", "Episode added successfully!");
+        showNotification("success", isEditMode ? "Episode updated successfully!" : "Episode added successfully!");
         setTimeout(
           () => navigate("/a7f3c8e2-4d1b-9f6e-8c2a-5b7d9e4f1a3c"),
           1500
         );
       } else {
-        showNotification("error", data.message || "Error adding episode");
+        showNotification("error", data.message || (isEditMode ? "Error updating episode" : "Error adding episode"));
       }
     } catch (error) {
       console.error("Error submitting episode:", error);
       showNotification(
         "error",
-        "Error adding episode. Check console for details."
+        isEditMode ? "Error updating episode. Check console for details." : "Error adding episode. Check console for details."
       );
     }
   };
@@ -124,16 +167,21 @@ const EpisodeForm = () => {
             <ArrowLeft size={20} />
             Back to Dashboard
           </button>
-          <h1 className="text-3xl font-bold">Add New Episode</h1>
+          <h1 className="text-3xl font-bold">{isEditMode ? "Edit Episode" : "Add New Episode"}</h1>
         </div>
       </div>
 
       {/* Form */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-lg shadow-md p-6 space-y-6"
-        >
+        {loading ? (
+          <div className="bg-white rounded-lg shadow-md p-6 text-center">
+            <p className="text-gray-500">Loading episode...</p>
+          </div>
+        ) : (
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white rounded-lg shadow-md p-6 space-y-6"
+          >
           {/* Thumbnail Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -298,6 +346,7 @@ const EpisodeForm = () => {
             </button>
           </div>
         </form>
+        )}
       </div>
     </div>
   );

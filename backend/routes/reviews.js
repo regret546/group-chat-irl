@@ -35,9 +35,13 @@ const handleUploadError = (err, req, res, next) => {
 
 // Public
 router.get("/", reviewCtrl.getReviews);
+router.get("/:id", reviewCtrl.getReview);
 
 // Protected creation (admin)
 router.post("/", auth, upload.single("reviewerPic"), handleUploadError, reviewCtrl.createReview);
+
+// Update
+router.put("/:id", auth, upload.single("reviewerPic"), handleUploadError, reviewCtrl.updateReview);
 
 // Delete
 router.delete("/:id", auth, reviewCtrl.deleteReview);

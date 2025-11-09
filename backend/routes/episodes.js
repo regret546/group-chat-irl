@@ -49,6 +49,17 @@ router.post(
   epCtrl.createEpisode
 );
 
+router.put(
+  "/:id",
+  auth,
+  upload.fields([
+    { name: "thumbnail", maxCount: 1 },
+    { name: "audio", maxCount: 1 },
+  ]),
+  handleUploadError,
+  epCtrl.updateEpisode
+);
+
 router.delete("/:id", auth, epCtrl.deleteEpisode);
 
 module.exports = router;

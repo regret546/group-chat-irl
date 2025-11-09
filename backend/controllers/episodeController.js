@@ -103,10 +103,66 @@ exports.getEpisode = async (req, res) => {
   res.json(ep);
 };
 
+exports.updateEpisode = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const files = req.files || {};
+    const { title, description, youtubeUrl } = req.body;
+    
+    const updateData = {};
+    if (title) updateData.title = title;
+    if (description) updateData.description = description;
+    if (youtubeUrl) updateData.youtubeUrl = youtubeUrl;
+    
+    // Handle thumbnail update
+    if (files.thumbnail && files.thumbnail[0]) {
+      updateData.thumbnailUrl = `/uploads/images/${files.thumbnail[0].filename}`;
+    }
+    
+    // Handle audio update
+    if (files.audio && files.audio[0]) {
+      const audioPath = `/uploads/audio/${files.audio[0].filename}`;
+      updateData.audioUrl = audioPath;
+      
+      // Calculate duration for new audio
+      const fileOnDisk = path.join(__dirname, "..", audioPath);
+      try {
+        const { parseFile } = await import("music-metadata");
+        const meta = await parseFile(
+          path.join(__dirname, "..", "uploads", "audio", files.audio[0].filename)
+        );
+        const durationSeconds = Math.floor(meta.format.duration || 0);
+        updateData.durationSeconds = durationSeconds;
+        updateData.durationHuman = secondsToHms(durationSeconds);
+        
+        if (durationSeconds > 300) {
+          const fs = require("fs");
+          try {
+            fs.unlinkSync(fileOnDisk);
+          } catch (unlinkErr) {
+            console.error("Error deleting file:", unlinkErr);
+          }
+          return res.status(400).json({ 
+            message: `Audio file is too long (${updateData.durationHuman}). Maximum duration is 5 minutes (5:00).` 
+          });
+        }
+      } catch (err) {
+        console.warn("metadata error", err.message);
+      }
+    }
+    
+    const episode = await Episode.findByIdAndUpdate(id, updateData, { new: true });
+    if (!episode) return res.status(404).json({ message: "Episode not found" });
+    
+    res.json(episode);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
 exports.deleteEpisode = async (req, res) => {
   const ep = await Episode.findByIdAndDelete(req.params.id);
   if (!ep) return res.status(404).json({ message: "Not found" });
   res.json({ message: "Deleted" });
 };
-
-// additional update function can be added similarly

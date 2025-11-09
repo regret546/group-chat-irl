@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import { motion } from 'motion/react';
+import { useState, useEffect } from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { motion } from "motion/react";
 
 const Reviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -12,7 +12,7 @@ const Reviews = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch('/api/reviews');
+        const response = await fetch("/api/reviews");
         if (response.ok) {
           const data = await response.json();
           setReviews(data);
@@ -22,12 +22,12 @@ const Reviews = () => {
           }
         }
       } catch (error) {
-        console.error('Error fetching reviews:', error);
+        console.error("Error fetching reviews:", error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchReviews();
   }, []);
 
@@ -35,11 +35,11 @@ const Reviews = () => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const next = () => setIndex((prev) => (prev + 1) % reviews.length);
@@ -76,19 +76,25 @@ const Reviews = () => {
                     <motion.div
                       key={review._id}
                       className={`absolute w-[280px] md:w-[300px] h-[280px] md:h-[300px] rounded-md p-4 md:p-6 text-center shadow-lg [clip-path:polygon(0_0,calc(100%-50px)_0,100%_50px,100%_100%,0_100%)] border-2 border-black mb-[2rem] ${
-                        isCenter ? "bg-primary text-white z-20" : "bg-accent z-10"
+                        isCenter
+                          ? "bg-primary text-white z-20"
+                          : "bg-accent z-10"
                       }`}
                       style={{
                         transformOrigin: "bottom center",
                       }}
                       animate={{
                         x: offset * (isMobile ? 100 : 180),
-                        scale: isCenter ? 1 : (isMobile ? 0.7 : 0.9),
+                        scale: isCenter ? 1 : isMobile ? 0.7 : 0.9,
                         rotate: offset * 5,
                         y: isCenter ? 0 : 20,
                         opacity: Math.abs(offset) > (isMobile ? 1 : 2) ? 0 : 1,
                       }}
-                      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 200,
+                        damping: 20,
+                      }}
                     >
                       {/* black diagonal bar */}
                       <span
@@ -101,13 +107,20 @@ const Reviews = () => {
                         }}
                       ></span>
                       <img
-                        src={review.reviewerPicUrl || `https://i.pravatar.cc/150?img=${i + 1}`}
+                        src={
+                          review.reviewerPicUrl ||
+                          `https://i.pravatar.cc/150?img=${i + 1}`
+                        }
                         alt={review.reviewerName}
                         className="w-10 h-10 md:w-12 md:h-12 mx-auto rounded-full mb-3 md:mb-4"
                         loading="lazy"
                       />
-                      <p className="text-base md:text-lg font-medium leading-snug">"{review.reviewText}"</p>
-                      <p className="mt-3 md:mt-4 text-xs md:text-sm opacity-80">– {review.reviewerName}</p>
+                      <p className="text-base md:text-lg font-medium leading-snug">
+                        "{review.reviewText}"
+                      </p>
+                      <p className="mt-3 md:mt-4 text-xs md:text-sm opacity-80">
+                        – {review.reviewerName}
+                      </p>
                     </motion.div>
                   );
                 })}
@@ -116,15 +129,15 @@ const Reviews = () => {
               <div className="absolute bottom-6 flex gap-4 md:gap-6">
                 <button
                   onClick={prev}
-                  className="p-2 md:p-3 bg-primary text-white rounded-full hover:bg-primary/80 hover:scale-110 md:hover:scale-120 transition"
+                  className="w-12 h-12 md:w-14 md:h-14 bg-primary text-white rounded-full hover:bg-primary/80 hover:scale-110 transition flex items-center justify-center"
                 >
-                  <i className="fa-solid fa-chevron-left text-black w-5 h-5 md:w-6 md:h-6"></i>
+                  <i className="fa-solid fa-chevron-left text-black text-lg md:text-xl"></i>
                 </button>
                 <button
                   onClick={next}
-                  className="p-2 md:p-3 bg-primary text-white rounded-full hover:bg-primary/80 hover:scale-110 md:hover:scale-120 transition"
+                  className="w-12 h-12 md:w-14 md:h-14 bg-primary text-white rounded-full hover:bg-primary/80 hover:scale-110 transition flex items-center justify-center"
                 >
-                  <i className="fa-solid fa-chevron-right text-black w-5 h-5 md:w-6 md:h-6"></i>
+                  <i className="fa-solid fa-chevron-right text-black text-lg md:text-xl"></i>
                 </button>
               </div>
             </div>
@@ -137,4 +150,3 @@ const Reviews = () => {
 };
 
 export default Reviews;
-
