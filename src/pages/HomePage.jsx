@@ -3,6 +3,7 @@ import Home from "../sections/Home";
 import Latest from "../sections/Latest";
 import Previous from "../sections/Previous";
 import Reviews from "../sections/Reviews";
+import MessageUs from "../sections/MessageUs";
 import Footer from "../components/Footer";
 
 const HomePage = () => {
@@ -13,6 +14,7 @@ const HomePage = () => {
       <Latest />
       <Previous />
       <Reviews />
+      <MessageUs />
       <Footer />
     </div>
   );
