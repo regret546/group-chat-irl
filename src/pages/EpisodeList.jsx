@@ -121,7 +121,7 @@ const EpisodeList = () => {
                     <h3 className="text-xl font-bold text-gray-900 mb-2">{episode.title}</h3>
                     <div className="space-y-2 text-gray-600">
                       <p><span className="font-semibold">Upload Date:</span> {new Date(episode.uploadDate).toLocaleDateString()}</p>
-                      <p><span className="font-semibold">Duration:</span> {episode.durationHuman || 'N/A'}</p>
+                      <p><span className="font-semibold">Duration:</span> {episode.totalTime || episode.durationHuman || 'N/A'}</p>
                       {episode.audioUrl && (
                         <p className="flex items-center gap-2">
                           <Play size={16} />

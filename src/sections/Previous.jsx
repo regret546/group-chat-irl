@@ -88,7 +88,7 @@ const Previous = memo(() => {
                     </div>
                     <div className="flex items-center gap-2">
                       <i className="fa-solid fa-clock"></i>
-                      <p>{episode.durationHuman || 'N/A'}</p>
+                      <p>{episode.totalTime || episode.durationHuman || 'N/A'}</p>
                     </div>
                   </div>
                   <h3 className="text-[1.2rem] md:text-[1.5rem] font-bold text-white">
@@ -100,7 +100,7 @@ const Previous = memo(() => {
                       href={episode.youtubeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-2 px-6 py-2 bg-accent text-dark font-semibold rounded-lg hover:bg-accent/80 transition-colors text-center"
+                      className="w-full mt-2 px-4 py-3 bg-accent text-dark font-semibold rounded-lg hover:bg-accent/80 transition-colors flex items-center justify-center min-h-[44px] leading-tight"
                     >
                       Watch Full Video
                     </a>

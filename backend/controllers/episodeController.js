@@ -30,7 +30,7 @@ exports.createEpisode = async (req, res) => {
       audioPath = `/uploads/audio/${files.audio[0].filename}`;
       console.log('Audio path:', audioPath);
     }
-    const { title, description, youtubeUrl } = req.body;
+    const { title, description, youtubeUrl, totalTime } = req.body;
     if (!title || !audioPath || !youtubeUrl) {
       console.log('Validation failed - Missing required fields');
       return res.status(400).json({ message: "Title, audio, and YouTube URL are required" });
@@ -83,6 +83,7 @@ exports.createEpisode = async (req, res) => {
       audioUrl: audioPath,
       durationSeconds,
       durationHuman,
+      totalTime: totalTime || (description && description.startsWith('Duration: ') ? description.replace('Duration: ', '') : null),
     });
 
     res.status(201).json(ep);
@@ -107,12 +108,18 @@ exports.updateEpisode = async (req, res) => {
   try {
     const { id } = req.params;
     const files = req.files || {};
-    const { title, description, youtubeUrl } = req.body;
+    const { title, description, youtubeUrl, totalTime } = req.body;
     
     const updateData = {};
     if (title) updateData.title = title;
     if (description) updateData.description = description;
     if (youtubeUrl) updateData.youtubeUrl = youtubeUrl;
+    if (totalTime) {
+      updateData.totalTime = totalTime;
+    } else if (description && description.startsWith('Duration: ')) {
+      // Extract from description for backward compatibility
+      updateData.totalTime = description.replace('Duration: ', '');
+    }
     
     // Handle thumbnail update
     if (files.thumbnail && files.thumbnail[0]) {

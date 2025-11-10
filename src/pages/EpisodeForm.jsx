@@ -36,7 +36,7 @@ const EpisodeForm = () => {
         setFormData({
           title: episode.title || "",
           uploadDate: episode.uploadDate ? new Date(episode.uploadDate).toISOString().split('T')[0] : "",
-          totalTime: episode.durationHuman || episode.description?.replace('Duration: ', '') || "",
+          totalTime: episode.totalTime || episode.durationHuman || episode.description?.replace('Duration: ', '') || "",
           youtubeUrl: episode.youtubeUrl || "",
         });
         if (episode.thumbnailUrl) {
@@ -118,7 +118,7 @@ const EpisodeForm = () => {
     const episodeData = new FormData();
     episodeData.append("title", formData.title);
     if (formData.totalTime)
-      episodeData.append("description", `Duration: ${formData.totalTime}`);
+      episodeData.append("totalTime", formData.totalTime);
     if (formData.youtubeUrl)
       episodeData.append("youtubeUrl", formData.youtubeUrl);
     if (thumbnail) episodeData.append("thumbnail", thumbnail);

@@ -165,7 +165,7 @@ const Latest = memo(() => {
                 href={latestEpisode.youtubeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full px-3 py-2 bg-accent text-dark font-semibold rounded-lg hover:bg-accent/80 transition-colors text-sm text-center"
+                className="w-full px-4 py-3 bg-accent text-dark font-semibold rounded-lg hover:bg-accent/80 transition-colors flex items-center justify-center min-h-[44px] leading-tight"
               >
                 Watch Full Video
               </a>
@@ -255,7 +255,7 @@ const Latest = memo(() => {
                   href={latestEpisode.youtubeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full px-4 py-3 bg-accent text-dark font-semibold rounded-lg hover:bg-accent/80 transition-colors text-center"
+                  className="w-full px-4 py-3 bg-accent text-dark font-semibold rounded-lg hover:bg-accent/80 transition-colors flex items-center justify-center min-h-[44px] leading-tight"
                 >
                   Watch Full Video
                 </a>

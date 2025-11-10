@@ -147,6 +147,11 @@ export default function Waveform({ audioUrl, audioRef }) {
 
   return (
     <div ref={containerRef} className="flex flex-col gap-1 w-full max-w-full">
+      {/* Label above waveform */}
+      <div className="text-sm text-white/90 font-medium mb-1">
+        Clip of the episode
+      </div>
+      
       {/* Time labels - ABOVE waveform */}
       <div className="flex justify-between w-full text-xs text-white/70">
         <span className="font-mono">{formatTime(currentTime)}</span>

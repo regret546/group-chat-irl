@@ -59,38 +59,41 @@ const AudioPlayer = ({ audioUrl, compact = false }) => {
     return (
       <div className="w-full">
         <audio ref={audioRef} src={audioUrl} preload="metadata" />
-        <div className="flex items-center gap-2">
-          {/* Skip and Play Controls */}
-          <button
-            onClick={() => handleSkip(-10)}
-            className="relative text-primary hover:text-primary/80 transition flex-shrink-0"
-          >
-            <i className="fa-solid fa-rotate-left text-base"></i>
-            <span className="absolute text-[0.5rem] font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-dark">
-              10
-            </span>
-          </button>
+        <div className="flex items-start gap-2">
+          {/* Skip and Play Controls - aligned with waveform visualization */}
+          {/* Padding accounts for: label (~20px) + mb-1 (4px) + gap-1 (4px) + time labels (~16px) + gap-1 (4px) + half waveform (32px) - half control height (~12px) = ~68px */}
+          <div className="flex items-center gap-1 pt-[68px]">
+            <button
+              onClick={() => handleSkip(-10)}
+              className="relative text-primary hover:text-primary/80 transition flex-shrink-0"
+            >
+              <i className="fa-solid fa-rotate-left text-base"></i>
+              <span className="absolute text-[0.5rem] font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-dark">
+                10
+              </span>
+            </button>
 
-          <button
-            onClick={handlePlayPause}
-            className="flex-shrink-0"
-          >
-            <i
-              className={`text-primary text-xl fa-solid ${
-                isPlaying ? "fa-pause" : "fa-play"
-              }`}
-            />
-          </button>
+            <button
+              onClick={handlePlayPause}
+              className="flex-shrink-0"
+            >
+              <i
+                className={`text-primary text-xl fa-solid ${
+                  isPlaying ? "fa-pause" : "fa-play"
+                }`}
+              />
+            </button>
 
-          <button
-            onClick={() => handleSkip(30)}
-            className="relative text-primary hover:text-primary/80 transition flex-shrink-0"
-          >
-            <i className="fa-solid fa-rotate-right text-base"></i>
-            <span className="absolute text-[0.5rem] font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-dark">
-              30
-            </span>
-          </button>
+            <button
+              onClick={() => handleSkip(30)}
+              className="relative text-primary hover:text-primary/80 transition flex-shrink-0"
+            >
+              <i className="fa-solid fa-rotate-right text-base"></i>
+              <span className="absolute text-[0.5rem] font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-dark">
+                30
+              </span>
+            </button>
+          </div>
 
           {/* Waveform (contains time labels above it) */}
           <div className="flex-1">
